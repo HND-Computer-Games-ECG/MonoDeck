@@ -1,7 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace MonoDeck
 {
@@ -10,9 +12,16 @@ namespace MonoDeck
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        public static readonly Random RNG = new Random();
+
+        private MouseState ms_curr, ms_old;
+
         List<Texture2D> _allCardBacks;
         List<Texture2D> _allCardFaces;
         List<CardData> _allCardData;
+
+        private Deck _testDeck;
+        private List<Character> _weePeeps;
 
         public Game1()
         {
@@ -23,6 +32,39 @@ namespace MonoDeck
 
         protected override void Initialize()
         {
+            _allCardData = new List<CardData>
+            {
+                new (CardType.Club, CardColour.Black, CardRank.Royal, 1),
+                new (CardType.Club, CardColour.Black, CardRank.Basic, 10),
+                new (CardType.Club, CardColour.Black, CardRank.Royal, 2),
+                new (CardType.Club, CardColour.Black, CardRank.Royal, 3),
+                new (CardType.Club, CardColour.Black, CardRank.Royal, 4),
+                new (CardType.Diamond, CardColour.Red, CardRank.Royal, 1),
+                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 10),
+                new (CardType.Diamond, CardColour.Red, CardRank.Royal, 2),
+                new (CardType.Diamond, CardColour.Red, CardRank.Royal, 3),
+                new (CardType.Diamond, CardColour.Red, CardRank.Royal, 4),
+                new (CardType.Heart, CardColour.Red, CardRank.Royal, 1),
+                new (CardType.Heart, CardColour.Red, CardRank.Basic, 10),
+                new (CardType.Heart, CardColour.Red, CardRank.Royal, 2),
+                new (CardType.Heart, CardColour.Red, CardRank.Royal, 3),
+                new (CardType.Heart, CardColour.Red, CardRank.Royal, 4),
+                new (CardType.Spade, CardColour.Black, CardRank.Royal, 1),
+                new (CardType.Spade, CardColour.Black, CardRank.Basic, 10),
+                new (CardType.Spade, CardColour.Black, CardRank.Royal, 2),
+                new (CardType.Spade, CardColour.Black, CardRank.Royal, 3),
+                new (CardType.Spade, CardColour.Black, CardRank.Royal, 4),
+            };
+            
+            _weePeeps = new List<Character>();
+
+            base.Initialize();
+        }
+
+        protected override void LoadContent()
+        {
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+
             _allCardBacks = new List<Texture2D>
             {
                 Content.Load<Texture2D>("Cards/Backs/cardBack_blue1"),
@@ -64,55 +106,47 @@ namespace MonoDeck
                 Content.Load<Texture2D>("Cards/Faces/cardSpadesQ"),
                 Content.Load<Texture2D>("Cards/Faces/cardSpadesK"),
             };
-            _allCardData = new List<CardData>()
-            {
-                new CardData(CardType.Club, CardColour.Black, CardRank.Royal, 1),
-                new CardData(CardType.Club, CardColour.Black, CardRank.Basic, 10),
-                new CardData(CardType.Club, CardColour.Black, CardRank.Royal, 2),
-                new CardData(CardType.Club, CardColour.Black, CardRank.Royal, 3),
-                new CardData(CardType.Club, CardColour.Black, CardRank.Royal, 4),
-                new CardData(CardType.Diamond, CardColour.Red, CardRank.Royal, 1),
-                new CardData(CardType.Diamond, CardColour.Red, CardRank.Basic, 10),
-                new CardData(CardType.Diamond, CardColour.Red, CardRank.Royal, 2),
-                new CardData(CardType.Diamond, CardColour.Red, CardRank.Royal, 3),
-                new CardData(CardType.Diamond, CardColour.Red, CardRank.Royal, 4),
-                new CardData(CardType.Heart, CardColour.Red, CardRank.Royal, 1),
-                new CardData(CardType.Heart, CardColour.Red, CardRank.Basic, 10),
-                new CardData(CardType.Heart, CardColour.Red, CardRank.Royal, 2),
-                new CardData(CardType.Heart, CardColour.Red, CardRank.Royal, 3),
-                new CardData(CardType.Heart, CardColour.Red, CardRank.Royal, 4),
-                new CardData(CardType.Spade, CardColour.Black, CardRank.Royal, 1),
-                new CardData(CardType.Spade, CardColour.Black, CardRank.Basic, 10),
-                new CardData(CardType.Spade, CardColour.Black, CardRank.Royal, 2),
-                new CardData(CardType.Spade, CardColour.Black, CardRank.Royal, 3),
-                new CardData(CardType.Spade, CardColour.Black, CardRank.Royal, 4),
-            };
 
-            base.Initialize();
-        }
+            Debug.Assert(_allCardFaces.Count == _allCardData.Count, "Card face count does not match card data count");
 
-        protected override void LoadContent()
-        {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _testDeck = new Deck(_allCardBacks[RNG.Next(_allCardBacks.Count)], new Vector2(_graphics.PreferredBackBufferWidth - 250, 25));
+            for (var i = 0; i < _allCardData.Count; i++)
+                _testDeck.AddCard(_allCardFaces[i], _allCardData[i]);
+            _testDeck.Shuffle();
 
-            // TODO: use this.Content to load your game content here
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(20, 70), new Point(3, 2), Color.Red));
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(300, 50), new Point(3, 2), Color.DimGray));
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(170, 170), new Point(3, 2), Color.DodgerBlue));
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            var dT = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            ms_curr = Mouse.GetState();
+            
+            _testDeck.Update(dT, ms_curr.Position);
 
-            // TODO: Add your update logic here
+            foreach (var peep in _weePeeps)
+                peep.Update(dT, ms_curr.Position);
 
+            if (_testDeck.Hover() && ms_curr.LeftButton == ButtonState.Pressed && ms_old.LeftButton == ButtonState.Released)
+                _testDeck.DiscardCard(_testDeck.PullCard());
+
+            ms_old = ms_curr;
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.ForestGreen);
+            GraphicsDevice.Clear(Color.DarkGreen);
 
-            // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+            _testDeck.Draw(_spriteBatch);
+
+            foreach (var peep in _weePeeps)
+                peep.Draw(_spriteBatch);
+
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
