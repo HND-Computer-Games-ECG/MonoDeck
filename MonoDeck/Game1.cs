@@ -21,6 +21,7 @@ namespace MonoDeck
         List<CardData> _allCardData;
 
         private Deck _testDeck;
+        private Hand _playerHand;
         private List<Character> _weePeeps;
 
         public Game1()
@@ -55,7 +56,8 @@ namespace MonoDeck
                 new (CardType.Spade, CardColour.Black, CardRank.Royal, 3),
                 new (CardType.Spade, CardColour.Black, CardRank.Royal, 4),
             };
-            
+
+            _playerHand = new Hand(new Vector2(_graphics.PreferredBackBufferWidth/2 - 70, _graphics.PreferredBackBufferHeight - 75), 7);
             _weePeeps = new List<Character>();
 
             base.Initialize();
@@ -114,9 +116,9 @@ namespace MonoDeck
                 _testDeck.AddCard(_allCardFaces[i], _allCardData[i]);
             _testDeck.Shuffle();
 
-            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(20, 70), new Point(3, 2), Color.Red));
-            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(300, 50), new Point(3, 2), Color.DimGray));
-            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(170, 170), new Point(3, 2), Color.DodgerBlue));
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(50, 80), new Point(3, 2), Color.Red));
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(330, 20), new Point(3, 2), Color.DimGray));
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(200, 170), new Point(3, 2), Color.DodgerBlue));
         }
 
         protected override void Update(GameTime gameTime)
@@ -125,12 +127,24 @@ namespace MonoDeck
             ms_curr = Mouse.GetState();
             
             _testDeck.Update(dT, ms_curr.Position);
+            _playerHand.Update(dT, ms_curr.Position);
+
 
             foreach (var peep in _weePeeps)
                 peep.Update(dT, ms_curr.Position);
 
-            if (_testDeck.Hover() && ms_curr.LeftButton == ButtonState.Pressed && ms_old.LeftButton == ButtonState.Released)
-                _testDeck.DiscardCard(_testDeck.PullCard());
+            if (ms_curr.LeftButton == ButtonState.Pressed && ms_old.LeftButton == ButtonState.Released)
+            {
+                if (_testDeck.Hover(CardPile.Draw))
+                    _playerHand.AddCard(_testDeck.PullCard());
+
+                if (_testDeck.Hover(CardPile.Discard))
+                    _testDeck.MergeAndReshuffle();
+
+                if (_playerHand.SelectedCard != -1)
+                    _testDeck.DiscardCard(_playerHand.PullCard());
+
+            }
 
             ms_old = ms_curr;
             base.Update(gameTime);
@@ -145,6 +159,8 @@ namespace MonoDeck
 
             foreach (var peep in _weePeeps)
                 peep.Draw(_spriteBatch);
+
+            _playerHand.Draw(_spriteBatch);
 
             _spriteBatch.End();
 

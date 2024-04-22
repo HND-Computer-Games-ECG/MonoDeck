@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using SharpDX.XAudio2;
 
 namespace MonoDeck
 {
@@ -55,8 +56,19 @@ namespace MonoDeck
         Texture2D _frontTex;
         Texture2D _backTex;
 
-        public Vector2 Pos { get; set; }
+        private Vector2 _pos;
+        public Vector2 Pos 
+        {
+            get => _pos;
+            set
+            {
+                _pos = value;
+                _rect.Location = value.ToPoint();
+            }
+        }
         private Rectangle _rect;
+
+        public bool Highlight { get; set; }
 
         CardData Data;
 
@@ -64,23 +76,31 @@ namespace MonoDeck
         {
             Pos = pos;
             _rect = new Rectangle(pos.ToPoint(), frontTex.Bounds.Size);
+            Highlight = false;
 
             _frontTex = frontTex;
             _backTex = backTex;
             Data = data;
         }
 
-        public void Draw(SpriteBatch sb, FacingState facingState)
+        public void Draw(SpriteBatch sb, FacingState facingState, bool highlight)
         {
-            if (facingState == FacingState.FaceUp)
-                sb.Draw(_frontTex, Pos, Color.LightGray);
-            else
-                sb.Draw(_backTex, Pos, Color.LightGray);
+            Draw(sb, Pos, facingState, highlight);
+        }
+
+        public void Draw(SpriteBatch sb, Vector2 position, FacingState facingState, bool highlight)
+        {
+            sb.Draw(facingState == FacingState.FaceUp ? _frontTex : _backTex, position, highlight ? Color.White : Color.LightGray);
         }
 
         public string DebugInfo()
         {
             return Data.DebugInfo();
+        }
+
+        public bool Hover(Point mousePos)
+        {
+            return _rect.Contains(mousePos);
         }
     }
 }

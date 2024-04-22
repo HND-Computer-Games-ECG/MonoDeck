@@ -5,6 +5,12 @@ using Microsoft.Xna.Framework;
 
 namespace MonoDeck
 {
+    enum CardPile
+    {
+        Draw,
+        Discard
+    }
+
     class Deck
     {
         private Texture2D _backTex;
@@ -12,9 +18,11 @@ namespace MonoDeck
         private List<Card> _discardPile;
 
         private Vector2 _pos;
-        private Rectangle _rect;
+        private Rectangle _drawpileRect, _discardRect;
 
-        private bool _highLight;
+        private bool _drawpileHighlight, _discardHighlight;
+
+        public bool IsEmpty => _drawPile.Count == 0;
 
         public Deck(Texture2D backTex, Vector2 pos)
         {
@@ -23,24 +31,29 @@ namespace MonoDeck
             _discardPile = new List<Card>();
 
             _pos = pos;
-            _rect = new Rectangle(pos.ToPoint(), backTex.Bounds.Size);
+            _drawpileRect = new Rectangle(pos.ToPoint(), backTex.Bounds.Size);
+            _discardRect = new Rectangle(pos.ToPoint() + new Point(_backTex.Width + 16, 0), backTex.Bounds.Size);
         }
 
         public void Update(float deltaTime, Point mousePos)
         {
-            _highLight = _rect.Contains(mousePos);
+            _drawpileHighlight = _drawpileRect.Contains(mousePos);
+            _discardHighlight = _discardRect.Contains(mousePos);
+
         }
 
         public void Draw(SpriteBatch sb)
         {
+            sb.Draw(_backTex, _drawpileRect, Color.White * 0.1f);
+            sb.Draw(_backTex, _discardRect, Color.White * 0.1f);
+            
             for (var i = 0; i < _drawPile.Count; i++)
             {
-                sb.Draw(_backTex, _pos + new Vector2(i/4, i/2), _highLight ? Color.White : Color.LightGray);
+                sb.Draw(_backTex, _pos + new Vector2(i/4, i/2), _drawpileHighlight ? Color.White : Color.LightGray);
             }
 
-
             foreach (var card in _discardPile)
-                card.Draw(sb, FacingState.FaceUp);
+                card.Draw(sb, FacingState.FaceUp, _discardHighlight);
         }
 
         public string DebugInfo()
@@ -56,9 +69,9 @@ namespace MonoDeck
             }
         }
 
-        public bool Hover()
+        public bool Hover(CardPile cardPile)
         {
-            return _highLight;
+            return cardPile == CardPile.Draw ? _drawpileHighlight : _discardHighlight;
         }
 
         public void AddCard(Texture2D frontTex, CardData data)
@@ -73,13 +86,13 @@ namespace MonoDeck
 
         public Card PullCard(int location = 0)
         {
-            if (_drawPile.Count == 0)
+            if (IsEmpty)
             {
                 Debug.WriteLine("Attempt to draw from empty deck!");
                 return null;
             }
 
-            if (_drawPile.Count <= 0)
+            if (_drawPile.Count <= location)
             {
                 Debug.WriteLine("Attempt to draw from outside deck bounds!");
                 return null;
@@ -98,8 +111,8 @@ namespace MonoDeck
                 return;
             }
 
-            // Set the new discard to the discard pile's location plus a little shoogle to make it look cool
-            newDiscard.Pos = _pos + new Vector2(_backTex.Width + 16, 0) + new Vector2(Game1.RNG.Next(-4, 4), Game1.RNG.Next(-4, 4));
+            // Set the new discard to the discard cardPile's location plus a little shoogle to make it look cool
+            newDiscard.Pos = _discardRect.Location.ToVector2() + new Vector2(Game1.RNG.Next(-4, 4), Game1.RNG.Next(-4, 4));
 
             _discardPile.Add(newDiscard);
         }
@@ -111,6 +124,12 @@ namespace MonoDeck
                 var j =  Game1.RNG.Next(i + 1);
                 (_drawPile[i], _drawPile[j]) = (_drawPile[j], _drawPile[i]);
             }
+        }
+
+        public void MergeAndReshuffle()
+        {
+            _drawPile.AddRange(_discardPile);
+            _discardPile.Clear();
         }
     }
 }
