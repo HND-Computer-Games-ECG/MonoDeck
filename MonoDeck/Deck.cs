@@ -17,12 +17,14 @@ namespace MonoDeck
         private List<Card> _drawPile;
         private List<Card> _discardPile;
 
-        private Vector2 _pos;
+        public Vector2 Pos { get; private set; }
+
         private Rectangle _drawpileRect, _discardRect;
 
         private bool _drawpileHighlight, _discardHighlight;
 
         public bool IsEmpty => _drawPile.Count == 0;
+        public bool IsDiscardEmpty => _discardPile.Count == 0;
 
         public Deck(Texture2D backTex, Vector2 pos)
         {
@@ -30,7 +32,7 @@ namespace MonoDeck
             _drawPile = new List<Card>();
             _discardPile = new List<Card>();
 
-            _pos = pos;
+            Pos = pos;
             _drawpileRect = new Rectangle(pos.ToPoint(), backTex.Bounds.Size);
             _discardRect = new Rectangle(pos.ToPoint() + new Point(_backTex.Width + 16, 0), backTex.Bounds.Size);
         }
@@ -49,7 +51,7 @@ namespace MonoDeck
             
             for (var i = 0; i < _drawPile.Count; i++)
             {
-                sb.Draw(_backTex, _pos + new Vector2(i/4, i/2), _drawpileHighlight ? Color.White : Color.LightGray);
+                sb.Draw(_backTex, Pos + new Vector2(i/4, i/2), _drawpileHighlight ? Color.White : Color.LightGray);
             }
 
             foreach (var card in _discardPile)
@@ -58,7 +60,7 @@ namespace MonoDeck
 
         public string DebugInfo()
         {
-            return ($"Pos:{_pos}\nDrawpile:{_drawPile.Count}\nDiscards:{_discardPile.Count}\n");
+            return ($"Pos:{Pos}\nDrawpile:{_drawPile.Count}\nDiscards:{_discardPile.Count}\n");
         }
 
         public void DebugDumpDeck()
@@ -74,6 +76,8 @@ namespace MonoDeck
             return cardPile == CardPile.Draw ? _drawpileHighlight : _discardHighlight;
         }
 
+
+        #region Functions that affect the draw pile
         public void AddCard(Texture2D frontTex, CardData data)
         {
             AddCard(frontTex, _backTex, data);
@@ -81,7 +85,7 @@ namespace MonoDeck
 
         public void AddCard(Texture2D frontTex, Texture2D backTex, CardData data)
         {
-            _drawPile.Add(new Card(_pos, frontTex, backTex, data));
+            _drawPile.Add(new Card(Pos, frontTex, backTex, data));
         }
 
         public Card PullCard(int location = 0)
@@ -103,6 +107,17 @@ namespace MonoDeck
             return tmp;
         }
 
+        public void Shuffle()
+        {
+            for (var i = _drawPile.Count - 1; i > 0; i--)
+            {
+                var j = Game1.RNG.Next(i + 1);
+                (_drawPile[i], _drawPile[j]) = (_drawPile[j], _drawPile[i]);
+            }
+        }
+        #endregion
+
+        #region Functions that affect the discard pile
         public void DiscardCard(Card newDiscard)
         {
             if (newDiscard == null)
@@ -116,15 +131,7 @@ namespace MonoDeck
 
             _discardPile.Add(newDiscard);
         }
-
-        public void Shuffle()
-        {
-            for (var i = _drawPile.Count - 1; i > 0; i--)
-            {
-                var j =  Game1.RNG.Next(i + 1);
-                (_drawPile[i], _drawPile[j]) = (_drawPile[j], _drawPile[i]);
-            }
-        }
+        #endregion
 
         public void MergeAndReshuffle()
         {

@@ -4,6 +4,7 @@ using SharpDX.XAudio2;
 
 namespace MonoDeck
 {
+    #region card enums
     enum FacingState
     {
         FaceUp,
@@ -21,7 +22,8 @@ namespace MonoDeck
     enum CardColour
     {
         Black,
-        Red
+        Red,
+        None
     }
 
     enum CardRank
@@ -29,7 +31,11 @@ namespace MonoDeck
         Basic,
         Royal
     }
+    #endregion
 
+    /// <summary>
+    /// The gameplay information about the card.
+    /// </summary>
     struct CardData
     {
         public CardType Type;
@@ -47,12 +53,13 @@ namespace MonoDeck
 
         public string DebugInfo()
         {
-            return ($"Type: {Type}\nColour: {Colour}\nRank: {Rank}\nValue:{Value}");
+            return ($"**Card Info**:\nType: {Type}\nColour: {Colour}\nRank: {Rank}\nValue:{Value}\n");
         }
     }
 
     class Card
     {
+        // Front and back art of the card
         Texture2D _frontTex;
         Texture2D _backTex;
 
@@ -70,7 +77,7 @@ namespace MonoDeck
 
         public bool Highlight { get; set; }
 
-        CardData Data;
+        public CardData Data { get; private set; }
 
         public Card(Vector2 pos, Texture2D frontTex, Texture2D backTex, CardData data)
         {
@@ -91,6 +98,23 @@ namespace MonoDeck
         public void Draw(SpriteBatch sb, Vector2 position, FacingState facingState, bool highlight)
         {
             sb.Draw(facingState == FacingState.FaceUp ? _frontTex : _backTex, position, highlight ? Color.White : Color.LightGray);
+        }
+
+        public void DrawMini(SpriteBatch sb, Point position, FacingState facingState, bool highlight)
+        {
+            Rectangle rect = _rect;
+            rect.Size = _rect.Size / new Point(2);
+            rect.Location = position;
+
+            sb.Draw(facingState == FacingState.FaceUp? _frontTex : _backTex, 
+                rect, 
+                null,
+                highlight ? Color.White : Color.LightGray,
+                0,
+                rect.Size.ToVector2() / 2,
+                SpriteEffects.None,
+                0
+            );
         }
 
         public string DebugInfo()

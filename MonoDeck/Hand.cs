@@ -8,7 +8,7 @@ namespace MonoDeck
     class Hand
     {
         private List<Card> _cards;
-        private Vector2 _pos;
+        public Vector2 Pos { get; private set; }
 
         private int _maxSize;
 
@@ -23,7 +23,7 @@ namespace MonoDeck
         public Hand(Vector2 pos, int maxSize)
         {
             _cards = new List<Card>();
-            _pos = pos;
+            Pos = pos;
 
             _maxSize = maxSize;
             SelectedCard = -1;
@@ -33,9 +33,23 @@ namespace MonoDeck
 
         public void Update(float deltaTime, Point mousePos)
         {
-            SelectedCard = (mousePos.X - _startX) / _stepX;
+            if (_cards.Count > 0)
+            {
+                // The last card in the hand is an annoying edge case, so let's deal with it first...
+                if (_cards[^1].Hover(mousePos))
+                {
+                    SelectedCard = _cards.Count - 1;
+                }
+                else
+                {
+                    // Every other card is just maths to find it's section...
+                    SelectedCard = (mousePos.X - _startX) / _stepX;
 
-            if (mousePos.Y < _pos.Y || SelectedCard >= _cards.Count)
+                    if (mousePos.Y < Pos.Y || SelectedCard >= _cards.Count)
+                        SelectedCard = -1;
+                }
+            }
+            else
                 SelectedCard = -1;
         }
 
@@ -52,7 +66,7 @@ namespace MonoDeck
 
         public string DebugInfo()
         {
-            var tmp = "";
+            var tmp = $"**Hand Info**:\nSelected: {SelectedCard}\n";
             foreach (var card in _cards)
                 tmp += card.DebugInfo();
 
@@ -61,11 +75,11 @@ namespace MonoDeck
 
         private void RefreshPositions()
         {
-            _startX = (int) _pos.X - (_cards.Count / 2) * _stepX;
+            _startX = (int) Pos.X - (_cards.Count / 2) * _stepX;
 
             for (var i = 0; i < _cards.Count; i++)
             {
-                _cards[i].Pos = new Vector2(_startX + (_stepX * i), _pos.Y);
+                _cards[i].Pos = new Vector2(_startX + (_stepX * i), Pos.Y);
             }
         }
 

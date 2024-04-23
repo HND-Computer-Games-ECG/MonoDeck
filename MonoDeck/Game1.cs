@@ -24,7 +24,13 @@ namespace MonoDeck
         // Actual game world stuff
         private Deck _testDeck;
         private Hand _playerHand;
+        private Card _cursorCard;
+
         private List<Character> _weePeeps;
+
+#if DEBUG
+        private SpriteFont _debugFont;
+#endif
 
         public Game1()
         {
@@ -63,6 +69,9 @@ namespace MonoDeck
             // Create a "hand" structure to hold player's cards
             _playerHand = new Hand(new Vector2(_graphics.PreferredBackBufferWidth/2 - 70, _graphics.PreferredBackBufferHeight - 75), 7);
 
+            // Cursor starts not "holding" a card
+            _cursorCard = null;
+
             // List to hold game characters
             _weePeeps = new List<Character>();
 
@@ -72,6 +81,10 @@ namespace MonoDeck
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+#if DEBUG
+            _debugFont = Content.Load<SpriteFont>("Arial08");
+#endif
 
             // Preload all the art into lists (this would be better in a spritesheet, but this is easier...)
             _allCardBacks = new List<Texture2D>
@@ -130,14 +143,14 @@ namespace MonoDeck
             _testDeck.Shuffle();
 
             // Create the peeps and add them to the list for easy management
-            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(50, 80), new Point(3, 2), Color.Red));
-            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(330, 20), new Point(3, 2), Color.DimGray));
-            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(200, 170), new Point(3, 2), Color.DodgerBlue));
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(50, 160), new Point(3, 2), CardColour.Red));
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(330, 100), new Point(3, 2), CardColour.Black));
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(200, 250), new Point(3, 2), CardColour.None));
         }
 
         protected override void Update(GameTime gameTime)
         {
-            // Make a local variable so we don't have to time gametime.Elapsed...blahblahblah each time
+            // Make a local variable so we don't have to type gametime.Elapsed...blahblahblah each time
             var dT = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // Get what the mouse is doing
@@ -151,17 +164,64 @@ namespace MonoDeck
             foreach (var peep in _weePeeps)
                 peep.Update(dT, ms_curr.Position);
 
+            #region Process player clicks
             if (ms_curr.LeftButton == ButtonState.Pressed && ms_old.LeftButton == ButtonState.Released)
             {
-                if (_testDeck.Hover(CardPile.Draw))
-                    _playerHand.AddCard(_testDeck.PullCard());
+                // if we're already holding a card
+                if (_cursorCard != null)
+                {
+                    // Trying to discard a card
+                    if (_testDeck.Hover(CardPile.Discard))
+                    {
+                        _testDeck.DiscardCard(_cursorCard);
+                        _cursorCard = null;
+                    }
 
-                if (_testDeck.Hover(CardPile.Discard))
-                    _testDeck.MergeAndReshuffle();
+                    foreach (var peep in _weePeeps)
+                    {
+                        // if player has clicked a card on a peep
+                        if (peep.Hover())
+                        {
+                            // if the colour of the card is the peep's favourite
+                            if (peep.CardAffinity == _cursorCard.Data.Colour)
+                            {
+                                if (_cursorCard.Data.Rank == CardRank.Royal)
+                                    peep.Jump(dT);
+                                else
+                                    peep.SetMood(CharState.Happy, 2);
+                            }
+                            else
+                            {
+                                if (_cursorCard.Data.Rank == CardRank.Royal)
+                                    peep.SetMood(CharState.Happy, 2);
+                                else
+                                    peep.SetMood(CharState.Sad, 2);
+                            }
 
-                if (_playerHand.SelectedCard != -1)
-                    _testDeck.DiscardCard(_playerHand.PullCard());
+                            // Regardless of reaction, discard the card
+                            _testDeck.DiscardCard(_cursorCard);
+                            _cursorCard = null;
+                        }
+                    }
+
+                }
+                else
+                // We're ready to pick up a card
+                {
+                    // Trying to draw a card, but check if the hand is full first!
+                    if (_testDeck.Hover(CardPile.Draw) && !_playerHand.IsFull)
+                        _playerHand.AddCard(_testDeck.PullCard());
+
+                    // Trying to shuffle the discards back in the deck, but check if there *is* discards to shuffle back in first!
+                    if (_testDeck.Hover(CardPile.Discard) && !_testDeck.IsEmpty)
+                        _testDeck.MergeAndReshuffle();
+
+                    // Trying to pick up a card...
+                    if (_playerHand.SelectedCard != -1)
+                        _cursorCard = _playerHand.PullCard();
+                }
             }
+            #endregion
 
             // Store what the mouse WAS doing
             ms_old = ms_curr;
@@ -181,6 +241,27 @@ namespace MonoDeck
                 peep.Draw(_spriteBatch);
 
             _playerHand.Draw(_spriteBatch);
+
+            if (_cursorCard != null)
+                _cursorCard.DrawMini(_spriteBatch, ms_curr.Position, FacingState.FaceUp, true);
+
+#if DEBUG
+            _spriteBatch.DrawString(_debugFont, _cursorCard == null ? "_cursorCard is null" : _cursorCard.DebugInfo(), ms_curr.Position.ToVector2() + Vector2.One, Color.Black);
+            _spriteBatch.DrawString(_debugFont, _cursorCard == null ? "_cursorCard is null" : _cursorCard.DebugInfo(), ms_curr.Position.ToVector2(), Color.White);
+
+            _spriteBatch.DrawString(_debugFont, _playerHand.DebugInfo(), Vector2.One, Color.Black);
+            _spriteBatch.DrawString(_debugFont, _playerHand.DebugInfo(), Vector2.Zero, Color.White);
+
+            _spriteBatch.DrawString(_debugFont, _testDeck.DebugInfo(), _testDeck.Pos + Vector2.One, Color.Black);
+            _spriteBatch.DrawString(_debugFont, _testDeck.DebugInfo(), _testDeck.Pos, Color.White);
+
+            foreach (var peep in _weePeeps)
+            {
+                _spriteBatch.DrawString(_debugFont, peep.DebugInfo(), peep.Pos + Vector2.One, Color.Black);
+                _spriteBatch.DrawString(_debugFont, peep.DebugInfo(), peep.Pos, Color.White);
+            }
+
+#endif
 
             _spriteBatch.End();
 

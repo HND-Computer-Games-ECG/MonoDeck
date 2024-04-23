@@ -34,6 +34,8 @@ namespace MonoDeck
 
         private readonly List<Rectangle> _srcCells;
 
+        public CardColour CardAffinity;
+
         /// <summary>
         /// Character Constructor
         /// </summary>
@@ -42,7 +44,7 @@ namespace MonoDeck
         /// <param name="pos">The base position of the character on screen</param>
         /// <param name="cells">How the texture spritesheets are divided up (grid dimensions</param>
         /// <param name="bodyTint">What colour is the body</param>
-        public Character(Texture2D baseTxr, Texture2D overlayTxr, Vector2 pos, Point cells, Color bodyTint)
+        public Character(Texture2D baseTxr, Texture2D overlayTxr, Vector2 pos, Point cells, CardColour cardAffinity)
         {
             _baseTxr = baseTxr;
             _overlayTxr = overlayTxr;
@@ -51,7 +53,20 @@ namespace MonoDeck
             _currPos = pos;
             _rect = new Rectangle(Pos.ToPoint(), new Point(baseTxr.Width / cells.X, baseTxr.Height / cells.Y));
 
-            _bodyTint = bodyTint;
+            CardAffinity = cardAffinity;
+            switch (CardAffinity)
+            {
+                case CardColour.Black:
+                    _bodyTint = Color.DimGray;
+                    break;
+                case CardColour.Red:
+                    _bodyTint = Color.Red;
+                    break;
+                default:
+                    _bodyTint = Color.DodgerBlue;
+                    break;
+            }
+
             _screenTint = Color.LightGray;
 
             _cState = CharState.Idle;
@@ -141,7 +156,12 @@ namespace MonoDeck
 
         public string DebugInfo()
         {
-            return ($"Root: {Pos}\ndeltaV: {_currPos}\nState: {_cState}\nVel:{_velocity}");
+            return ($"Root: {Pos}\ndeltaV: {_currPos}\nState: {_cState}\nVel:{_velocity}\n");
+        }
+
+        public bool Hover()
+        {
+            return _screenTint == Color.White;
         }
 
         public void SetMood(CharState newMood, float duration)
