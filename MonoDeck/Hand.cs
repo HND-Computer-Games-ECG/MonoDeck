@@ -55,8 +55,10 @@ namespace MonoDeck
 
         public void Draw(SpriteBatch sb)
         {
+            // Go through and draw all the cards
             for (var i = 0; i < _cards.Count; i++)
             {
+                // if the current card is the selected one, highlight it and move it up when it's drawn
                 if (SelectedCard == i)
                     _cards[i].Draw(sb, _cards[i].Pos + new Vector2(0, -25), FacingState.FaceUp, true);
                 else
@@ -73,6 +75,9 @@ namespace MonoDeck
             return (tmp);
         }
 
+        /// <summary>
+        /// When a card is added or removed from the hand, call this function to tidy up the positions
+        /// </summary>
         private void RefreshPositions()
         {
             _startX = (int) Pos.X - (_cards.Count / 2) * _stepX;
@@ -83,6 +88,10 @@ namespace MonoDeck
             }
         }
 
+        /// <summary>
+        /// Add the given card to the end of the hand and reposition
+        /// </summary>
+        /// <param name="newHandCard">New card to add</param>
         public void AddCard(Card newHandCard)
         {
             if (newHandCard == null)
@@ -101,6 +110,10 @@ namespace MonoDeck
             RefreshPositions();
         }
 
+        /// <summary>
+        /// Remove the currently selected card from the hand
+        /// </summary>
+        /// <returns>The card that has been removed.</returns>
         public Card PullCard()
         {
             if (IsEmpty)

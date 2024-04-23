@@ -208,12 +208,12 @@ namespace MonoDeck
                 else
                 // We're ready to pick up a card
                 {
-                    // Trying to draw a card, but check if the hand is full first!
-                    if (_testDeck.Hover(CardPile.Draw) && !_playerHand.IsFull)
+                    // Trying to draw a card, but check if the hand is full or the deck is empty first!
+                    if (_testDeck.Hover(CardPile.Draw) && !_playerHand.IsFull && !_testDeck.IsEmpty)
                         _playerHand.AddCard(_testDeck.PullCard());
 
                     // Trying to shuffle the discards back in the deck, but check if there *is* discards to shuffle back in first!
-                    if (_testDeck.Hover(CardPile.Discard) && !_testDeck.IsEmpty)
+                    if (_testDeck.Hover(CardPile.Discard) && !_testDeck.IsDiscardEmpty)
                         _testDeck.MergeAndReshuffle();
 
                     // Trying to pick up a card...
@@ -260,7 +260,6 @@ namespace MonoDeck
                 _spriteBatch.DrawString(_debugFont, peep.DebugInfo(), peep.Pos + Vector2.One, Color.Black);
                 _spriteBatch.DrawString(_debugFont, peep.DebugInfo(), peep.Pos, Color.White);
             }
-
 #endif
 
             _spriteBatch.End();

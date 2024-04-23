@@ -41,7 +41,6 @@ namespace MonoDeck
         {
             _drawpileHighlight = _drawpileRect.Contains(mousePos);
             _discardHighlight = _discardRect.Contains(mousePos);
-
         }
 
         public void Draw(SpriteBatch sb)
@@ -78,16 +77,32 @@ namespace MonoDeck
 
 
         #region Functions that affect the draw pile
+        /// <summary>
+        /// Add a card to the deck using the deck's back
+        /// </summary>
+        /// <param name="frontTex">Art for the front of the card</param>
+        /// <param name="data">The play data of the card</param>
         public void AddCard(Texture2D frontTex, CardData data)
         {
             AddCard(frontTex, _backTex, data);
         }
 
+        /// <summary>
+        /// Add a card to the deck using a (potentially) different back
+        /// </summary>
+        /// <param name="frontTex">Art for the front of the card</param>
+        /// <param name="backTex">Art for the back of the card</param>
+        /// <param name="data">The play data of the card</param>
         public void AddCard(Texture2D frontTex, Texture2D backTex, CardData data)
         {
             _drawPile.Add(new Card(Pos, frontTex, backTex, data));
         }
 
+        /// <summary>
+        /// Remove (draw) a card from the deck.
+        /// </summary>
+        /// <param name="location">Where to draw from, defaults to the top of the deck.</param>
+        /// <returns>The removed card</returns>
         public Card PullCard(int location = 0)
         {
             if (IsEmpty)
@@ -107,6 +122,9 @@ namespace MonoDeck
             return tmp;
         }
 
+        /// <summary>
+        /// Shuffle the cards currently in the drawPile
+        /// </summary>
         public void Shuffle()
         {
             for (var i = _drawPile.Count - 1; i > 0; i--)
@@ -118,6 +136,10 @@ namespace MonoDeck
         #endregion
 
         #region Functions that affect the discard pile
+        /// <summary>
+        /// Add the given card to the discard pile
+        /// </summary>
+        /// <param name="newDiscard">The card to add to the discard pile</param>
         public void DiscardCard(Card newDiscard)
         {
             if (newDiscard == null)
@@ -133,10 +155,14 @@ namespace MonoDeck
         }
         #endregion
 
+        /// <summary>
+        /// Take the discard pile, add it to the draw pile and reshuffle.
+        /// </summary>
         public void MergeAndReshuffle()
         {
             _drawPile.AddRange(_discardPile);
             _discardPile.Clear();
+            Shuffle();
         }
     }
 }

@@ -14,6 +14,9 @@ namespace MonoDeck
         Jumping
     }
 
+    /// <summary>
+    /// A little peep for the world...
+    /// </summary>
     class Character
     {
         protected Texture2D _baseTxr, _overlayTxr;
