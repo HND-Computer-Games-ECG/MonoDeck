@@ -122,7 +122,7 @@ namespace MonoDeck
                 return null;
             }
 
-            if (SelectedCard == -1)
+            if (SelectedCard < 0)
             {
                 Debug.WriteLine("Attempt to draw from outside deck bounds!");
                 return null;
