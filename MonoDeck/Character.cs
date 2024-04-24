@@ -19,7 +19,15 @@ namespace MonoDeck
     /// </summary>
     class Character
     {
-        protected Texture2D _baseTxr, _overlayTxr;
+        private static List<Color> levelColours = new List<Color>
+        {
+            Color.DodgerBlue,
+            Color.Gold,
+        };
+
+        private Texture2D _baseTxr, _overlayTxr;
+        private Texture2D _emptyHeartTxr, _fullHeartTxr;
+        private Texture2D _armourChromaTxr, _armourOverlayTxr;
 
         public Vector2 Pos { get; }
         private Rectangle _rect;
@@ -38,6 +46,10 @@ namespace MonoDeck
         private readonly List<Rectangle> _srcCells;
 
         public CardColour CardAffinity;
+        public int Level;
+        public int _hpMax;
+        public int _hp;
+        public int _armour;
 
         /// <summary>
         /// Character Constructor
@@ -47,16 +59,22 @@ namespace MonoDeck
         /// <param name="pos">The base position of the character on screen</param>
         /// <param name="cells">How the texture spritesheets are divided up (grid dimensions</param>
         /// <param name="bodyTint">What colour is the body</param>
-        public Character(Texture2D baseTxr, Texture2D overlayTxr, Vector2 pos, Point cells, CardColour cardAffinity)
+        public Character(Texture2D baseTxr, Texture2D overlayTxr, 
+            List<Texture2D> uiTxrs, Vector2 pos, Point cells)
         {
             _baseTxr = baseTxr;
             _overlayTxr = overlayTxr;
+            _emptyHeartTxr = uiTxrs[0];
+            _fullHeartTxr = uiTxrs[1];
+            _armourChromaTxr = uiTxrs[2];
+            _armourOverlayTxr = uiTxrs[3];
 
             Pos = pos;
             _currPos = pos;
             _rect = new Rectangle(Pos.ToPoint(), new Point(baseTxr.Width / cells.X, baseTxr.Height / cells.Y));
 
-            CardAffinity = cardAffinity;
+            CardAffinity = CardColour.None;
+            Level = 0;
             switch (CardAffinity)
             {
                 case CardColour.Black:
@@ -66,14 +84,13 @@ namespace MonoDeck
                     _bodyTint = Color.Red;
                     break;
                 default:
-                    _bodyTint = Color.DodgerBlue;
+                    _bodyTint = levelColours[Level];
                     break;
             }
 
             _screenTint = Color.LightGray;
 
             _cState = CharState.Idle;
-
             
             _velocity = Vector2.Zero;
 
@@ -84,6 +101,10 @@ namespace MonoDeck
                     _srcCells.Add(new Rectangle(new Point(x * cellSize.X, y * cellSize.Y), cellSize));
 
             _walkPace = 0.25f;
+
+            _hpMax = 4;
+            _hp = 3;
+            _armour = 0;
         }
 
         public void Update(float deltaTime, Point mousePos)
@@ -154,6 +175,21 @@ namespace MonoDeck
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+
+            if (_screenTint != Color.White)
+                return;
+
+            int i;
+            int healthY = (int) _currPos.Y;
+            for (i = 0; i < _hp; i++)
+                sB.Draw(_fullHeartTxr, new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1), healthY), Color.White * 0.8f);
+            for (; i < _hpMax; i++)
+                sB.Draw(_emptyHeartTxr, new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1), healthY), Color.White * 0.8f);
+            for (i = 0; i < _armour; i++)
+            {
+                sB.Draw(_armourChromaTxr, new Vector2(_currPos.X + i * _armourChromaTxr.Width, healthY - 15), _bodyTint * 0.8f);
+                sB.Draw(_armourOverlayTxr, new Vector2(_currPos.X + i * _armourOverlayTxr.Width, healthY - 15), Color.White * 0.8f);
             }
         }
 

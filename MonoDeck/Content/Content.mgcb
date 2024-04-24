@@ -836,6 +836,18 @@
 /processorParam:TextureFormat=Color
 /build:Cards/Faces/cardSpadesQ.png
 
+#begin Cards/ParticleCards/blank.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Cards/ParticleCards/blank.png
+
 #begin Cards/ParticleCards/club.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -907,4 +919,28 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:charsheet_overlay.png
+
+#begin shield_chroma.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:shield_chroma.png
+
+#begin shield_overlay.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:shield_overlay.png
 

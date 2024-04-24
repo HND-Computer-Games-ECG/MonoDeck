@@ -4,8 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Diagnostics;
-using SharpDX.Direct2D1.Effects;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MonoDeck
 {
@@ -35,6 +33,7 @@ namespace MonoDeck
         List<CardData> _allCardData;
 
         List<Texture2D> _particleCards;
+        List<Texture2D> _characterUISprites;
 
         // Actual game world stuff
         private Deck _testDeck;
@@ -214,6 +213,13 @@ namespace MonoDeck
                 Content.Load<Texture2D>("Cards/ParticleCards/Heart"),
                 Content.Load<Texture2D>("Cards/ParticleCards/Spade")
             };
+            _characterUISprites = new List<Texture2D>
+            {
+                Content.Load<Texture2D>("Cards/ParticleCards/blank"),
+                Content.Load<Texture2D>("Cards/ParticleCards/Heart"),
+                Content.Load<Texture2D>("shield_chroma"),
+                Content.Load<Texture2D>("shield_overlay")
+            };
 
             // The card faces need to match up with the card data set up in Initialise or this won't work - so let's check for that
             Debug.Assert(_allCardFaces.Count == _allCardData.Count, "Card face count does not match card data count");
@@ -229,9 +235,12 @@ namespace MonoDeck
             _testDeck.Shuffle();
 
             // Create the peeps and add them to the list for easy management
-            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(50, 160), new Point(3, 2), CardColour.Red));
-            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(330, 100), new Point(3, 2), CardColour.Black));
-            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(200, 250), new Point(3, 2), CardColour.None));
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), _characterUISprites, 
+                new Vector2(50, 160), new Point(3, 2)));
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), _characterUISprites, 
+                new Vector2(330, 100), new Point(3, 2)));
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), _characterUISprites, 
+                new Vector2(200, 250), new Point(3, 2)));
         }
 
         protected override void Update(GameTime gameTime)
