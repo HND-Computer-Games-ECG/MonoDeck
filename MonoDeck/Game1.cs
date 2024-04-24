@@ -4,9 +4,22 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Diagnostics;
+using SharpDX.Direct2D1.Effects;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MonoDeck
 {
+    // A Jump next launch
+    // J Armours
+    // Q Heal All
+    // K Upgrade
+
+    // Spades launch
+    // Diamonds generate
+    // Clubs drop
+    // Hearts Heal
+
+
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
@@ -20,6 +33,8 @@ namespace MonoDeck
         List<Texture2D> _allCardBacks;
         List<Texture2D> _allCardFaces;
         List<CardData> _allCardData;
+
+        List<Texture2D> _particleCards;
 
         // Actual game world stuff
         private Deck _testDeck;
@@ -45,21 +60,53 @@ namespace MonoDeck
             _allCardData = new List<CardData>
             {
                 new (CardType.Club, CardColour.Black, CardRank.Royal, 1),
+                new (CardType.Club, CardColour.Black, CardRank.Basic, 2),
+                new (CardType.Club, CardColour.Black, CardRank.Basic, 3),
+                new (CardType.Club, CardColour.Black, CardRank.Basic, 4),
+                new (CardType.Club, CardColour.Black, CardRank.Basic, 5),
+                new (CardType.Club, CardColour.Black, CardRank.Basic, 6),
+                new (CardType.Club, CardColour.Black, CardRank.Basic, 7),
+                new (CardType.Club, CardColour.Black, CardRank.Basic, 8),
+                new (CardType.Club, CardColour.Black, CardRank.Basic, 9),
                 new (CardType.Club, CardColour.Black, CardRank.Basic, 10),
                 new (CardType.Club, CardColour.Black, CardRank.Royal, 2),
                 new (CardType.Club, CardColour.Black, CardRank.Royal, 3),
                 new (CardType.Club, CardColour.Black, CardRank.Royal, 4),
                 new (CardType.Diamond, CardColour.Red, CardRank.Royal, 1),
+                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 2),
+                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 3),
+                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 4),
+                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 5),
+                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 6),
+                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 7),
+                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 8),
+                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 9),
                 new (CardType.Diamond, CardColour.Red, CardRank.Basic, 10),
                 new (CardType.Diamond, CardColour.Red, CardRank.Royal, 2),
                 new (CardType.Diamond, CardColour.Red, CardRank.Royal, 3),
                 new (CardType.Diamond, CardColour.Red, CardRank.Royal, 4),
                 new (CardType.Heart, CardColour.Red, CardRank.Royal, 1),
+                new (CardType.Heart, CardColour.Red, CardRank.Basic, 2),
+                new (CardType.Heart, CardColour.Red, CardRank.Basic, 3),
+                new (CardType.Heart, CardColour.Red, CardRank.Basic, 4),
+                new (CardType.Heart, CardColour.Red, CardRank.Basic, 5),
+                new (CardType.Heart, CardColour.Red, CardRank.Basic, 6),
+                new (CardType.Heart, CardColour.Red, CardRank.Basic, 7),
+                new (CardType.Heart, CardColour.Red, CardRank.Basic, 8),
+                new (CardType.Heart, CardColour.Red, CardRank.Basic, 9),
                 new (CardType.Heart, CardColour.Red, CardRank.Basic, 10),
                 new (CardType.Heart, CardColour.Red, CardRank.Royal, 2),
                 new (CardType.Heart, CardColour.Red, CardRank.Royal, 3),
                 new (CardType.Heart, CardColour.Red, CardRank.Royal, 4),
                 new (CardType.Spade, CardColour.Black, CardRank.Royal, 1),
+                new (CardType.Spade, CardColour.Black, CardRank.Basic, 2),
+                new (CardType.Spade, CardColour.Black, CardRank.Basic, 3),
+                new (CardType.Spade, CardColour.Black, CardRank.Basic, 4),
+                new (CardType.Spade, CardColour.Black, CardRank.Basic, 5),
+                new (CardType.Spade, CardColour.Black, CardRank.Basic, 6),
+                new (CardType.Spade, CardColour.Black, CardRank.Basic, 7),
+                new (CardType.Spade, CardColour.Black, CardRank.Basic, 8),
+                new (CardType.Spade, CardColour.Black, CardRank.Basic, 9),
                 new (CardType.Spade, CardColour.Black, CardRank.Basic, 10),
                 new (CardType.Spade, CardColour.Black, CardRank.Royal, 2),
                 new (CardType.Spade, CardColour.Black, CardRank.Royal, 3),
@@ -108,25 +155,64 @@ namespace MonoDeck
             _allCardFaces = new List<Texture2D>
             {
                 Content.Load<Texture2D>("Cards/Faces/cardClubsA"),
+                Content.Load<Texture2D>("Cards/Faces/cardClubs2"),
+                Content.Load<Texture2D>("Cards/Faces/cardClubs3"),
+                Content.Load<Texture2D>("Cards/Faces/cardClubs4"),
+                Content.Load<Texture2D>("Cards/Faces/cardClubs5"),
+                Content.Load<Texture2D>("Cards/Faces/cardClubs6"),
+                Content.Load<Texture2D>("Cards/Faces/cardClubs7"),
+                Content.Load<Texture2D>("Cards/Faces/cardClubs8"),
+                Content.Load<Texture2D>("Cards/Faces/cardClubs9"),
                 Content.Load<Texture2D>("Cards/Faces/cardClubs10"),
                 Content.Load<Texture2D>("Cards/Faces/cardClubsJ"),
                 Content.Load<Texture2D>("Cards/Faces/cardClubsQ"),
                 Content.Load<Texture2D>("Cards/Faces/cardClubsK"),
                 Content.Load<Texture2D>("Cards/Faces/cardDiamondsA"),
+                Content.Load<Texture2D>("Cards/Faces/cardDiamonds2"),
+                Content.Load<Texture2D>("Cards/Faces/cardDiamonds3"),
+                Content.Load<Texture2D>("Cards/Faces/cardDiamonds4"),
+                Content.Load<Texture2D>("Cards/Faces/cardDiamonds5"),
+                Content.Load<Texture2D>("Cards/Faces/cardDiamonds6"),
+                Content.Load<Texture2D>("Cards/Faces/cardDiamonds7"),
+                Content.Load<Texture2D>("Cards/Faces/cardDiamonds8"),
+                Content.Load<Texture2D>("Cards/Faces/cardDiamonds9"),
                 Content.Load<Texture2D>("Cards/Faces/cardDiamonds10"),
                 Content.Load<Texture2D>("Cards/Faces/cardDiamondsJ"),
                 Content.Load<Texture2D>("Cards/Faces/cardDiamondsQ"),
                 Content.Load<Texture2D>("Cards/Faces/cardDiamondsK"),
                 Content.Load<Texture2D>("Cards/Faces/cardHeartsA"),
+                Content.Load<Texture2D>("Cards/Faces/cardHearts2"),
+                Content.Load<Texture2D>("Cards/Faces/cardHearts3"),
+                Content.Load<Texture2D>("Cards/Faces/cardHearts4"),
+                Content.Load<Texture2D>("Cards/Faces/cardHearts5"),
+                Content.Load<Texture2D>("Cards/Faces/cardHearts6"),
+                Content.Load<Texture2D>("Cards/Faces/cardHearts7"),
+                Content.Load<Texture2D>("Cards/Faces/cardHearts8"),
+                Content.Load<Texture2D>("Cards/Faces/cardHearts9"),
                 Content.Load<Texture2D>("Cards/Faces/cardHearts10"),
                 Content.Load<Texture2D>("Cards/Faces/cardHeartsJ"),
                 Content.Load<Texture2D>("Cards/Faces/cardHeartsQ"),
                 Content.Load<Texture2D>("Cards/Faces/cardHeartsK"),
                 Content.Load<Texture2D>("Cards/Faces/cardSpadesA"),
+                Content.Load<Texture2D>("Cards/Faces/cardSpades2"),
+                Content.Load<Texture2D>("Cards/Faces/cardSpades3"),
+                Content.Load<Texture2D>("Cards/Faces/cardSpades4"),
+                Content.Load<Texture2D>("Cards/Faces/cardSpades5"),
+                Content.Load<Texture2D>("Cards/Faces/cardSpades6"),
+                Content.Load<Texture2D>("Cards/Faces/cardSpades7"),
+                Content.Load<Texture2D>("Cards/Faces/cardSpades8"),
+                Content.Load<Texture2D>("Cards/Faces/cardSpades9"),
                 Content.Load<Texture2D>("Cards/Faces/cardSpades10"),
                 Content.Load<Texture2D>("Cards/Faces/cardSpadesJ"),
                 Content.Load<Texture2D>("Cards/Faces/cardSpadesQ"),
                 Content.Load<Texture2D>("Cards/Faces/cardSpadesK"),
+            };
+            _particleCards = new List<Texture2D>
+            {
+                Content.Load<Texture2D>("Cards/ParticleCards/Club"),
+                Content.Load<Texture2D>("Cards/ParticleCards/Diamond"),
+                Content.Load<Texture2D>("Cards/ParticleCards/Heart"),
+                Content.Load<Texture2D>("Cards/ParticleCards/Spade")
             };
 
             // The card faces need to match up with the card data set up in Initialise or this won't work - so let's check for that

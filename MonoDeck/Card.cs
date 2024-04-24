@@ -33,6 +33,14 @@ namespace MonoDeck
     }
     #endregion
 
+    enum Royals
+    {
+        Ace = 1,
+        Jack,
+        Queen,
+        King
+    }
+
     /// <summary>
     /// The gameplay information about the card.
     /// </summary>
