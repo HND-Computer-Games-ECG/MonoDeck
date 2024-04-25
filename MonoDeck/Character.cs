@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -23,11 +25,14 @@ namespace MonoDeck
         {
             Color.DodgerBlue,
             Color.Gold,
+            Color.MediumPurple
         };
 
         private Texture2D _baseTxr, _overlayTxr;
         private Texture2D _emptyHeartTxr, _fullHeartTxr;
         private Texture2D _armourChromaTxr, _armourOverlayTxr;
+
+        private List<Rectangle> _StatQuarters;
 
         public Vector2 Pos { get; }
         private Rectangle _rect;
@@ -47,9 +52,15 @@ namespace MonoDeck
 
         public CardColour CardAffinity;
         public int Level;
-        public int _hpMax;
-        public int _hp;
-        public int _armour;
+        public int HPMax;
+        private int _hp;
+
+        public int HP
+        {
+            get => _hp;
+            set => _hp = MathHelper.Clamp(value, 0, HPMax);
+        }
+        private int _armour;
 
         /// <summary>
         /// Character Constructor
@@ -69,12 +80,20 @@ namespace MonoDeck
             _armourChromaTxr = uiTxrs[2];
             _armourOverlayTxr = uiTxrs[3];
 
+            _StatQuarters = new List<Rectangle>()
+            {
+                new Rectangle(0,                      0,                       _emptyHeartTxr.Width/2, _emptyHeartTxr.Height/2),
+                new Rectangle(_emptyHeartTxr.Width/2, 0,                       _emptyHeartTxr.Width/2, _emptyHeartTxr.Height/2),
+                new Rectangle(0,                      _emptyHeartTxr.Height/2, _emptyHeartTxr.Width/2, _emptyHeartTxr.Height/2),
+                new Rectangle(_emptyHeartTxr.Width/2, _emptyHeartTxr.Height/2, _emptyHeartTxr.Width/2, _emptyHeartTxr.Height/2),
+            };
+
             Pos = pos;
             _currPos = pos;
             _rect = new Rectangle(Pos.ToPoint(), new Point(baseTxr.Width / cells.X, baseTxr.Height / cells.Y));
 
-            CardAffinity = CardColour.None;
             Level = 0;
+            CardAffinity = CardColour.None;
             switch (CardAffinity)
             {
                 case CardColour.Black:
@@ -102,8 +121,8 @@ namespace MonoDeck
 
             _walkPace = 0.25f;
 
-            _hpMax = 4;
-            _hp = 3;
+            HPMax = 16;
+            _hp = 12;
             _armour = 0;
         }
 
@@ -180,16 +199,49 @@ namespace MonoDeck
             if (_screenTint != Color.White)
                 return;
 
+            DrawStats(sB);
+        }
+
+        private void DrawStats(SpriteBatch sB)
+        {
             int i;
-            int healthY = (int) _currPos.Y;
-            for (i = 0; i < _hp; i++)
+            int healthY = (int)_currPos.Y;
+            for (i = 0; i < _hp/4; i++)
                 sB.Draw(_fullHeartTxr, new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1), healthY), Color.White * 0.8f);
-            for (; i < _hpMax; i++)
-                sB.Draw(_emptyHeartTxr, new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1), healthY), Color.White * 0.8f);
+            int quarters = _hp % 4;
+
+            if (quarters != 0)
+            {
+                int j;
+                for (j = 0; j < quarters; j++)
+                {
+                    sB.Draw(_fullHeartTxr,
+                        new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1) + _StatQuarters[0].Width * (j % 2),
+                            healthY + _StatQuarters[0].Height * (j / 2)),
+                        _StatQuarters[j],
+                        Color.White * 0.8f);
+                }
+
+                for (; j < 4; j++)
+                {
+                    sB.Draw(_emptyHeartTxr,
+                        new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1) + _StatQuarters[0].Width * (j % 2),
+                            healthY + _StatQuarters[0].Height * (j / 2)),
+                        _StatQuarters[j],
+                        Color.White * 0.8f);
+                }
+
+                i++;
+            }
+            for (; i < HPMax / 4; i++)
+                sB.Draw(_emptyHeartTxr, new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1), healthY),
+                    Color.White * 0.8f);
+
             for (i = 0; i < _armour; i++)
             {
                 sB.Draw(_armourChromaTxr, new Vector2(_currPos.X + i * _armourChromaTxr.Width, healthY - 15), _bodyTint * 0.8f);
-                sB.Draw(_armourOverlayTxr, new Vector2(_currPos.X + i * _armourOverlayTxr.Width, healthY - 15), Color.White * 0.8f);
+                sB.Draw(_armourOverlayTxr, new Vector2(_currPos.X + i * _armourOverlayTxr.Width, healthY - 15),
+                    Color.White * 0.8f);
             }
         }
 
@@ -213,6 +265,39 @@ namespace MonoDeck
         {
             _velocity.Y = -800 * deltaTime;
             _currPos += _velocity;
+        }
+
+        public void LevelUp(CardColour levelingCardColour)
+        {
+            if (Level == levelColours.Count)
+            {
+                Debug.WriteLine("Peep is already max level when assigned a level up!");
+                return;
+            }
+
+            Level++;
+            HPMax += 4;
+
+            if (Level == levelColours.Count)
+                CardAffinity = levelingCardColour;
+
+            switch (CardAffinity)
+            {
+                case CardColour.Black:
+                    _bodyTint = Color.DimGray;
+                    break;
+                case CardColour.Red:
+                    _bodyTint = Color.Red;
+                    break;
+                default:
+                    _bodyTint = levelColours[Level];
+                    break;
+            }
+        }
+
+        public void GainArmour()
+        {
+            _armour++;
         }
     }
 }

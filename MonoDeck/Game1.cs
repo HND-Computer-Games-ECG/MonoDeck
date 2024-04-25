@@ -12,11 +12,12 @@ namespace MonoDeck
     // Q Heal All
     // K Upgrade
 
-    // Spades launch
-    // Diamonds generate
+    // 
+
+    // Spades add to that set and launch
+    // Diamonds add to all sets generate
     // Clubs drop
     // Hearts Heal
-
 
     public class Game1 : Game
     {
@@ -272,33 +273,19 @@ namespace MonoDeck
                         _cursorCard = null;
                     }
 
-                    foreach (var peep in _weePeeps)
+                    for (var i = 0; i < _weePeeps.Count; i++)
                     {
-                        // if player has clicked a card on a peep
-                        if (peep.Hover())
+                        // Trying to play a card on a peep
+                        if (_weePeeps[i].Hover())
                         {
-                            // if the colour of the card is the peep's favourite
-                            if (peep.CardAffinity == _cursorCard.Data.Colour)
+                            if (ProcessCursorCard(i))
                             {
-                                if (_cursorCard.Data.Rank == CardRank.Royal)
-                                    peep.Jump(dT);
-                                else
-                                    peep.SetMood(CharState.Happy, 2);
+                                // Card has been processed, discard it
+                                _testDeck.DiscardCard(_cursorCard);
+                                _cursorCard = null;
                             }
-                            else
-                            {
-                                if (_cursorCard.Data.Rank == CardRank.Royal)
-                                    peep.SetMood(CharState.Happy, 2);
-                                else
-                                    peep.SetMood(CharState.Sad, 2);
-                            }
-
-                            // Regardless of reaction, discard the card
-                            _testDeck.DiscardCard(_cursorCard);
-                            _cursorCard = null;
                         }
                     }
-
                 }
                 else
                 // We're ready to pick up a card
@@ -324,6 +311,43 @@ namespace MonoDeck
             base.Update(gameTime);
         }
 
+        private bool ProcessCursorCard(int activePeep)
+        {
+            if (_cursorCard.Data.Rank == CardRank.Royal)
+            {
+                switch (_cursorCard.Data.Value)
+                {
+                    case (int)Royals.Ace:
+                        break;
+                    case (int)Royals.Jack:
+                        _weePeeps[activePeep].GainArmour();
+                        foreach (var peep in _weePeeps)
+                        {
+                            if (peep.CardAffinity == _cursorCard.Data.Colour)
+                                peep.GainArmour();
+                        }
+                        return true;
+                    case (int)Royals.Queen:
+                        if (_weePeeps[activePeep].HP < _weePeeps[activePeep].HPMax)
+                        {
+                            _weePeeps[activePeep].HP = _weePeeps[activePeep].HPMax;
+                            foreach (var peep in _weePeeps)
+                                peep.HP = Math.Max(peep.HP, peep.HPMax/2);
+                            return true;
+                        }
+                        break;
+                    case (int)Royals.King:
+                        if (_weePeeps[activePeep].CardAffinity == CardColour.None)
+                        {
+                            _weePeeps[activePeep].LevelUp(_cursorCard.Data.Colour);
+                            return true;
+                        }
+                        break;
+                }
+            }
+            return false;
+        }
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.DarkGreen);
@@ -341,20 +365,20 @@ namespace MonoDeck
                 _cursorCard.DrawMini(_spriteBatch, ms_curr.Position, FacingState.FaceUp, true);
 
 #if DEBUG
-            _spriteBatch.DrawString(_debugFont, _cursorCard == null ? "_cursorCard is null" : _cursorCard.DebugInfo(), ms_curr.Position.ToVector2() + Vector2.One, Color.Black);
-            _spriteBatch.DrawString(_debugFont, _cursorCard == null ? "_cursorCard is null" : _cursorCard.DebugInfo(), ms_curr.Position.ToVector2(), Color.White);
+            //_spriteBatch.DrawString(_debugFont, _cursorCard == null ? "_cursorCard is null" : _cursorCard.DebugInfo(), ms_curr.Position.ToVector2() + Vector2.One, Color.Black);
+            //_spriteBatch.DrawString(_debugFont, _cursorCard == null ? "_cursorCard is null" : _cursorCard.DebugInfo(), ms_curr.Position.ToVector2(), Color.White);
 
-            _spriteBatch.DrawString(_debugFont, _playerHand.DebugInfo(), Vector2.One, Color.Black);
-            _spriteBatch.DrawString(_debugFont, _playerHand.DebugInfo(), Vector2.Zero, Color.White);
+            //_spriteBatch.DrawString(_debugFont, _playerHand.DebugInfo(), Vector2.One, Color.Black);
+            //_spriteBatch.DrawString(_debugFont, _playerHand.DebugInfo(), Vector2.Zero, Color.White);
 
-            _spriteBatch.DrawString(_debugFont, _testDeck.DebugInfo(), _testDeck.Pos + Vector2.One, Color.Black);
-            _spriteBatch.DrawString(_debugFont, _testDeck.DebugInfo(), _testDeck.Pos, Color.White);
+            //_spriteBatch.DrawString(_debugFont, _testDeck.DebugInfo(), _testDeck.Pos + Vector2.One, Color.Black);
+            //_spriteBatch.DrawString(_debugFont, _testDeck.DebugInfo(), _testDeck.Pos, Color.White);
 
-            foreach (var peep in _weePeeps)
-            {
-                _spriteBatch.DrawString(_debugFont, peep.DebugInfo(), peep.Pos + Vector2.One, Color.Black);
-                _spriteBatch.DrawString(_debugFont, peep.DebugInfo(), peep.Pos, Color.White);
-            }
+            //foreach (var peep in _weePeeps)
+            //{
+            //    _spriteBatch.DrawString(_debugFont, peep.DebugInfo(), peep.Pos + Vector2.One, Color.Black);
+            //    _spriteBatch.DrawString(_debugFont, peep.DebugInfo(), peep.Pos, Color.White);
+            //}
 #endif
 
             _spriteBatch.End();
