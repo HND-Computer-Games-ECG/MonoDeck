@@ -346,7 +346,7 @@ namespace MonoDeck
                     case (int)Royals.King:
                         if (_weePeeps[activePeep].CardAffinity == CardColour.None)
                         {
-                            _weePeeps[activePeep].LevelUp(_cursorCard.Data.Colour);
+                            _weePeeps[activePeep].GainLevel(_cursorCard.Data.Colour);
                             return true;
                         }
                         break;
@@ -354,7 +354,28 @@ namespace MonoDeck
             }
             else
             {
-
+                switch (_cursorCard.Data.Type)
+                {
+                    case CardType.Club:
+                    case CardType.Diamond:
+                        _weePeeps[activePeep].GainSwarm(_particleCards[(int) _cursorCard.Data.Type], _cursorCard.Data.Value);
+                        foreach (var peep in _weePeeps)
+                        {
+                            if (peep.CardAffinity == _cursorCard.Data.Colour)
+                                peep.GainSwarm(_particleCards[(int)_cursorCard.Data.Type], _cursorCard.Data.Value);
+                        }
+                        return true;
+                    case CardType.Heart:
+                        _weePeeps[activePeep].GainHealth(_cursorCard.Data.Value);
+                        foreach (var peep in _weePeeps)
+                        {
+                            if (peep.CardAffinity == _cursorCard.Data.Colour)
+                                peep.GainHealth(_cursorCard.Data.Value);
+                        }
+                        return true;
+                    case CardType.Spade:
+                        break;
+                }
             }
             return false;
         }

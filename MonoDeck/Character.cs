@@ -28,6 +28,8 @@ namespace MonoDeck
             Color.MediumPurple
         };
 
+        private SwarmManager _swarmManager;
+
         private Texture2D _baseTxr, _overlayTxr;
         private Texture2D _emptyHeartTxr, _fullHeartTxr;
         private Texture2D _armourChromaTxr, _armourOverlayTxr;
@@ -73,6 +75,10 @@ namespace MonoDeck
         public Character(Texture2D baseTxr, Texture2D overlayTxr, 
             List<Texture2D> uiTxrs, Vector2 pos, Point cells)
         {
+
+            var frameSize = baseTxr.Bounds.Size / cells;
+            _swarmManager = new SwarmManager(pos + frameSize.ToVector2() / 2, frameSize.ToVector2());
+
             _baseTxr = baseTxr;
             _overlayTxr = overlayTxr;
             _emptyHeartTxr = uiTxrs[0];
@@ -128,6 +134,8 @@ namespace MonoDeck
 
         public void Update(float deltaTime, Point mousePos)
         {
+            _swarmManager.Update(deltaTime);
+
             _rect.Location = _currPos.ToPoint();
             _screenTint = _rect.Contains(mousePos) ? Color.White : Color.LightGray;
 
@@ -172,6 +180,7 @@ namespace MonoDeck
                 _moodTimer = 0;
                 _cState = CharState.Idle;
             }
+
         }
 
         public void Draw(SpriteBatch sB)
@@ -196,6 +205,8 @@ namespace MonoDeck
                     throw new ArgumentOutOfRangeException();
             }
 
+            _swarmManager.Draw(sB);
+
             if (_screenTint != Color.White)
                 return;
 
@@ -207,7 +218,7 @@ namespace MonoDeck
             int i;
             int healthY = (int)_currPos.Y;
             for (i = 0; i < _hp/4; i++)
-                sB.Draw(_fullHeartTxr, new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1), healthY), Color.White * 0.8f);
+                sB.Draw(_fullHeartTxr, new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1), healthY), Color.White * 0.9f);
             int quarters = _hp % 4;
 
             if (quarters != 0)
@@ -219,7 +230,7 @@ namespace MonoDeck
                         new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1) + _StatQuarters[0].Width * (j % 2),
                             healthY + _StatQuarters[0].Height * (j / 2)),
                         _StatQuarters[j],
-                        Color.White * 0.8f);
+                        Color.White * 0.9f);
                 }
 
                 for (; j < 4; j++)
@@ -228,20 +239,20 @@ namespace MonoDeck
                         new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1) + _StatQuarters[0].Width * (j % 2),
                             healthY + _StatQuarters[0].Height * (j / 2)),
                         _StatQuarters[j],
-                        Color.White * 0.8f);
+                        Color.White * 0.9f);
                 }
 
                 i++;
             }
             for (; i < HPMax / 4; i++)
                 sB.Draw(_emptyHeartTxr, new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1), healthY),
-                    Color.White * 0.8f);
+                    Color.White * 0.9f);
 
             for (i = 0; i < _armour; i++)
             {
-                sB.Draw(_armourChromaTxr, new Vector2(_currPos.X + i * _armourChromaTxr.Width, healthY - 15), _bodyTint * 0.8f);
+                sB.Draw(_armourChromaTxr, new Vector2(_currPos.X + i * _armourChromaTxr.Width, healthY - 15), _bodyTint * 0.9f);
                 sB.Draw(_armourOverlayTxr, new Vector2(_currPos.X + i * _armourOverlayTxr.Width, healthY - 15),
-                    Color.White * 0.8f);
+                    Color.White * 0.9f);
             }
         }
 
@@ -267,7 +278,7 @@ namespace MonoDeck
             _currPos += _velocity;
         }
 
-        public void LevelUp(CardColour levelingCardColour)
+        public void GainLevel(CardColour levelingCardColour)
         {
             if (Level == levelColours.Count)
             {
@@ -298,6 +309,17 @@ namespace MonoDeck
         public void GainArmour()
         {
             _armour++;
+        }
+
+        public void GainSwarm(Texture2D tex, int amount = 1)
+        {
+            for (int i = 0; i < amount; i++)
+                _swarmManager.AddToSwarm(new SwarmParticle(tex));
+        }
+
+        public void GainHealth(int amount = 1)
+        {
+            HP += amount;
         }
     }
 }
