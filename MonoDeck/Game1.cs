@@ -14,9 +14,9 @@ namespace MonoDeck
 
     // 
 
-    // Spades add to that set and launch
-    // Diamonds add to all sets generate
-    // Clubs drop
+    // Spades add to that cloud and launch orbitals
+    // Diamonds add to all orbitals
+    // Clubs add to all clouds
     // Hearts Heal
 
     public class Game1 : Game

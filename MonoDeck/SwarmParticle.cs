@@ -6,20 +6,22 @@ namespace MonoDeck
 {
     class SwarmParticle
     {
-        public Vector2 AnchorPos { get; set; }
         public Vector2 Pos { get; set; }
+        protected Vector2 _anchorPos;
+        protected Vector2 _anchorOffset;
 
         protected Texture2D _tex;
-        
+
         public float Rotation { get; set; }
         protected Vector2 _pivot;
         private float _rotSpeed;
 
-        public SwarmParticle(Texture2D tex)
+        public SwarmParticle(Texture2D tex, Vector2 pos)
         {
-            AnchorPos = Vector2.Zero;
-            Pos = Vector2.Zero;
             _tex = tex;
+            Pos = pos;
+            _anchorPos = pos;
+            _anchorOffset = Vector2.Zero;
 
             Rotation = Game1.RNG.NextSingle() * MathHelper.TwoPi;
             _pivot = tex.Bounds.Center.ToVector2();
@@ -33,36 +35,43 @@ namespace MonoDeck
 
         public virtual void Draw(SpriteBatch sB)
         {
+            Pos = _anchorPos + _anchorOffset;
             sB.Draw(_tex, Pos, null, Color.White * 0.8f, Rotation, _pivot, 1, SpriteEffects.None, 0);
         }
     }
 
-    /*class OrbitalSwarmParticle : SwarmParticle
+    class ScatterSwarmParticle : SwarmParticle
+    {
+        public ScatterSwarmParticle(Texture2D tex, Vector2 anchor, Vector2 range) : base(tex, anchor)
+        {
+            _anchorPos = anchor;
+            _anchorOffset = new Vector2(Game1.RNG.Next((int) range.X) - range.X/2, Game1.RNG.Next((int) range.Y) - range.Y / 2);
+        }
+    }
+
+    class OrbitalSwarmSwarmParticle : SwarmParticle
     {
         private float _orbitalRotation;
         private float _orbitalSpeed;
-        private Vector2 _orbitalPos;
         private float _range;
 
-        public OrbitalSwarmParticle(Texture2D tex, Vector2 pos, float rotSpeed, float orbitalSpeed, float range) : base(tex, pos, rotSpeed)
+        public OrbitalSwarmSwarmParticle(Texture2D tex, Vector2 anchor, float range) : base(tex, anchor)
         {
+            _anchorPos = anchor;
+
             _orbitalRotation = Game1.RNG.NextSingle() * MathHelper.TwoPi;
-            _orbitalSpeed = orbitalSpeed;
+            _orbitalSpeed = (Game1.RNG.NextSingle() < 0.5f ? -1 : 1) * ((Game1.RNG.NextSingle() * 3) + 1);
             _range = range;
+
+            _anchorOffset = new Vector2(MathF.Cos(_orbitalRotation) * _range, MathF.Sin(_orbitalRotation) * _range);
         }
 
         public override void Update(float deltaTime)
         {
-            _orbitalRotation += _orbitalSpeed * deltaTime;
-
-            _orbitalPos = new Vector2(MathF.Cos(_orbitalRotation) * _range, MathF.Sin(_orbitalRotation));
+            _orbitalRotation = (_orbitalRotation + _orbitalSpeed * deltaTime) % MathHelper.TwoPi;
+            _anchorOffset = new Vector2(MathF.Cos(_orbitalRotation) * _range, MathF.Sin(_orbitalRotation) * _range);
 
             base.Update(deltaTime);
         }
-
-        public override void Draw(SpriteBatch sB)
-        {
-            sB.Draw(_tex, _orbitalPos, null, Color.White, Rotation, _pivot, 1, SpriteEffects.None, 0);
-        }
-    }*/
+    }
 }

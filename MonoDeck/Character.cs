@@ -313,8 +313,8 @@ namespace MonoDeck
 
         public void GainSwarm(Texture2D tex, int amount = 1)
         {
-            for (int i = 0; i < amount; i++)
-                _swarmManager.AddToSwarm(new SwarmParticle(tex));
+            for (var i = 0; i < amount; i++)
+                _swarmManager.AddToSwarm(tex);
         }
 
         public void GainHealth(int amount = 1)
