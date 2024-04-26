@@ -49,23 +49,23 @@ namespace MonoDeck
         }
     }
 
-    class OrbitalSwarmSwarmParticle : SwarmParticle
+    class OrbitalSwarmParticle : SwarmParticle
     {
-        private float _orbitalRotation;
-        private float _orbitalSeed;
+        protected float _orbitalRotation;
+        protected float _orbitalSeed;
 
-        private float _orbitalSpeed;
-        private float _range;
+        protected float _orbitalSpeed;
+        protected float _range;
 
-        public OrbitalSwarmSwarmParticle(Texture2D tex, Vector2 anchor, float range) : base(tex, anchor)
+        public OrbitalSwarmParticle(Texture2D tex, Vector2 anchor, float range) : base(tex, anchor)
         {
             _anchorPos = anchor;
 
             _orbitalSeed = _orbitalRotation = Game1.RNG.NextSingle() * MathHelper.TwoPi;
-            _orbitalSpeed = (Game1.RNG.NextSingle() < 0.5f ? -1 : 1) * ((Game1.RNG.NextSingle() * 3) + 1);
+            _orbitalSpeed = (Game1.RNG.NextSingle() < 0.5f ? -1 : 1) * ((Game1.RNG.NextSingle() * 2) + 1);
             _range = range;
 
-            _anchorOffset = new Vector2(MathF.Cos(_orbitalRotation) * _range, MathF.Sin(_orbitalRotation) * _range);
+            _anchorOffset = new Vector2(MathF.Cos(_orbitalRotation), MathF.Sin(_orbitalRotation)) * _range;
         }
 
         public override void Update(float deltaTime)
@@ -74,6 +74,20 @@ namespace MonoDeck
             _anchorOffset = new Vector2(MathF.Cos(_orbitalRotation), MathF.Sin(_orbitalRotation)) * (_range + MathF.Sin(_orbitalRotation * 2 + _orbitalSeed) * 8);
 
             base.Update(deltaTime);
+        }
+    }
+
+    class CloudSwarmParticle : OrbitalSwarmParticle
+    {
+        public CloudSwarmParticle(Texture2D tex, Vector2 anchor, float range) : base(tex, anchor, range)
+        {
+            _anchorOffset = new Vector2(MathF.Cos(_orbitalRotation) * _range/2, MathF.Sin(_orbitalRotation) * _range/8 - (_range + MathF.Cos(_orbitalRotation * 3 + _orbitalSeed) * 2));
+        }
+
+        public override void Update(float deltaTime)
+        {
+            base.Update(deltaTime);
+            _anchorOffset = new Vector2(MathF.Cos(_orbitalRotation) * _range/2 , MathF.Sin(_orbitalRotation) * _range/8 - (_range + MathF.Cos(_orbitalRotation * 3 + _orbitalSeed) * 2));
         }
     }
 }

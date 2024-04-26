@@ -28,7 +28,7 @@ namespace MonoDeck
             Color.MediumPurple
         };
 
-        private SwarmManager _swarmManager;
+        private SwarmManager _cloudSwarm, _orbitalSwarm;
 
         private Texture2D _baseTxr, _overlayTxr;
         private Texture2D _emptyHeartTxr, _fullHeartTxr;
@@ -77,7 +77,8 @@ namespace MonoDeck
         {
 
             var frameSize = baseTxr.Bounds.Size / cells;
-            _swarmManager = new SwarmManager(pos + frameSize.ToVector2() / 2, frameSize.ToVector2());
+            _cloudSwarm = new SwarmManager(pos + frameSize.ToVector2() / 2, frameSize.ToVector2(), SwarmType.Cloud);
+            _orbitalSwarm = new SwarmManager(pos + frameSize.ToVector2() / 2, frameSize.ToVector2(), SwarmType.Orbital);
 
             _baseTxr = baseTxr;
             _overlayTxr = overlayTxr;
@@ -134,7 +135,8 @@ namespace MonoDeck
 
         public void Update(float deltaTime, Point mousePos)
         {
-            _swarmManager.Update(deltaTime);
+            _cloudSwarm.Update(deltaTime);
+            _orbitalSwarm.Update(deltaTime);
 
             _rect.Location = _currPos.ToPoint();
             _screenTint = _rect.Contains(mousePos) ? Color.White : Color.LightGray;
@@ -205,7 +207,8 @@ namespace MonoDeck
                     throw new ArgumentOutOfRangeException();
             }
 
-            _swarmManager.Draw(sB);
+            _cloudSwarm.Draw(sB);
+            _orbitalSwarm.Draw(sB);
 
             if (_screenTint != Color.White)
                 return;
@@ -311,10 +314,14 @@ namespace MonoDeck
             _armour++;
         }
 
-        public void GainSwarm(Texture2D tex, int amount = 1)
+        public void GainCloudSwarm(Texture2D tex, int amount = 1)
         {
-            for (var i = 0; i < amount; i++)
-                _swarmManager.AddToSwarm(tex);
+            _cloudSwarm.AddToSwarm(tex, amount);
+        }
+
+        public void GainOrbitalSwarm(Texture2D tex, int amount = 1)
+        {
+            _orbitalSwarm.AddToSwarm(tex, amount);
         }
 
         public void GainHealth(int amount = 1)

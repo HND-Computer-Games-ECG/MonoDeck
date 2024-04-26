@@ -19,6 +19,8 @@ namespace MonoDeck
     // Clubs add to all clouds
     // Hearts Heal
 
+    // Clouds drop one per card play
+
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
@@ -320,12 +322,15 @@ namespace MonoDeck
 
         private bool ProcessCursorCard(int activePeep, float deltaTime)
         {
+            bool cardUsed = false;
+
             if (_cursorCard.Data.Rank == CardRank.Royal)
             {
                 switch (_cursorCard.Data.Value)
                 {
                     case (int)Royals.Ace:
                         _weePeeps[activePeep].Jump(deltaTime);
+                        cardUsed = true;
                         break;
                     case (int)Royals.Jack:
                         _weePeeps[activePeep].GainArmour();
@@ -334,51 +339,56 @@ namespace MonoDeck
                             if (peep.CardAffinity == _cursorCard.Data.Colour)
                                 peep.GainArmour();
                         }
-                        return true;
+                        cardUsed = true;
+                        break;
                     case (int)Royals.Queen:
                         if (_weePeeps[activePeep].HP < _weePeeps[activePeep].HPMax)
                         {
                             _weePeeps[activePeep].HP = _weePeeps[activePeep].HPMax;
                             foreach (var peep in _weePeeps)
                                 peep.HP = Math.Max(peep.HP, peep.HPMax/2);
-                            return true;
+                            cardUsed = true;
                         }
                         break;
                     case (int)Royals.King:
                         if (_weePeeps[activePeep].CardAffinity == CardColour.None)
                         {
                             _weePeeps[activePeep].GainLevel(_cursorCard.Data.Colour);
-                            return true;
+                            cardUsed = true;
                         }
                         break;
                 }
             }
-            else
+
+            switch (_cursorCard.Data.Type)
             {
-                switch (_cursorCard.Data.Type)
-                {
-                    case CardType.Club:
-                    case CardType.Diamond:
-                        _weePeeps[activePeep].GainSwarm(_particleCards[(int) _cursorCard.Data.Type], _cursorCard.Data.Value);
-                        foreach (var peep in _weePeeps)
-                        {
-                            if (peep.CardAffinity == _cursorCard.Data.Colour)
-                                peep.GainSwarm(_particleCards[(int)_cursorCard.Data.Type], _cursorCard.Data.Value);
-                        }
-                        return true;
-                    case CardType.Heart:
-                        _weePeeps[activePeep].GainHealth(_cursorCard.Data.Value);
-                        foreach (var peep in _weePeeps)
-                        {
-                            if (peep.CardAffinity == _cursorCard.Data.Colour)
-                                peep.GainHealth(_cursorCard.Data.Value);
-                        }
-                        return true;
-                    case CardType.Spade:
-                        break;
-                }
+                case CardType.Club:
+                    for (var i = 0; i < _cursorCard.Data.Value; i++)
+                    {
+                        _weePeeps[(activePeep + i) % _weePeeps.Count].GainCloudSwarm(_particleCards[(int) _cursorCard.Data.Type]);
+                    }
+                    cardUsed = true;
+                    break;
+                case CardType.Diamond:
+                    for (var i = 0; i < _cursorCard.Data.Value; i++)
+                    {
+                        _weePeeps[(activePeep + i) % _weePeeps.Count].GainOrbitalSwarm(_particleCards[(int) _cursorCard.Data.Type]);
+                    }
+                    cardUsed = true;
+                    break;
+                case CardType.Heart:
+                    _weePeeps[activePeep].GainHealth(_cursorCard.Data.Value);
+                    foreach (var peep in _weePeeps)
+                    {
+                        if (peep.CardAffinity == _cursorCard.Data.Colour)
+                            peep.GainHealth(_cursorCard.Data.Value);
+                    }
+                    cardUsed = true;
+                    break;
+                case CardType.Spade:
+                    break;
             }
-            return false;
+            return cardUsed;
         }
 
         protected override void Draw(GameTime gameTime)
