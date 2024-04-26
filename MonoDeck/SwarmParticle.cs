@@ -52,6 +52,8 @@ namespace MonoDeck
     class OrbitalSwarmSwarmParticle : SwarmParticle
     {
         private float _orbitalRotation;
+        private float _orbitalSeed;
+
         private float _orbitalSpeed;
         private float _range;
 
@@ -59,7 +61,7 @@ namespace MonoDeck
         {
             _anchorPos = anchor;
 
-            _orbitalRotation = Game1.RNG.NextSingle() * MathHelper.TwoPi;
+            _orbitalSeed = _orbitalRotation = Game1.RNG.NextSingle() * MathHelper.TwoPi;
             _orbitalSpeed = (Game1.RNG.NextSingle() < 0.5f ? -1 : 1) * ((Game1.RNG.NextSingle() * 3) + 1);
             _range = range;
 
@@ -69,7 +71,7 @@ namespace MonoDeck
         public override void Update(float deltaTime)
         {
             _orbitalRotation = (_orbitalRotation + _orbitalSpeed * deltaTime) % MathHelper.TwoPi;
-            _anchorOffset = new Vector2(MathF.Cos(_orbitalRotation) * _range, MathF.Sin(_orbitalRotation) * _range);
+            _anchorOffset = new Vector2(MathF.Cos(_orbitalRotation), MathF.Sin(_orbitalRotation)) * (_range + MathF.Sin(_orbitalRotation * 2 + _orbitalSeed) * 8);
 
             base.Update(deltaTime);
         }

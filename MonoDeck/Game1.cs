@@ -285,7 +285,7 @@ namespace MonoDeck
                         // Trying to play a card on a peep
                         if (_weePeeps[i].Hover())
                         {
-                            if (ProcessCursorCard(i))
+                            if (ProcessCursorCard(i, dT))
                             {
                                 // Card has been processed, discard it
                                 _testDeck.DiscardCard(_cursorCard);
@@ -318,13 +318,14 @@ namespace MonoDeck
             base.Update(gameTime);
         }
 
-        private bool ProcessCursorCard(int activePeep)
+        private bool ProcessCursorCard(int activePeep, float deltaTime)
         {
             if (_cursorCard.Data.Rank == CardRank.Royal)
             {
                 switch (_cursorCard.Data.Value)
                 {
                     case (int)Royals.Ace:
+                        _weePeeps[activePeep].Jump(deltaTime);
                         break;
                     case (int)Royals.Jack:
                         _weePeeps[activePeep].GainArmour();
