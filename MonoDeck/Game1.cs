@@ -266,6 +266,13 @@ namespace MonoDeck
                 // if we're already holding a card
                 if (_cursorCard != null)
                 {
+                    // Trying to re-hand a card...
+                    if (_playerHand.SelectedCard != -1)
+                    {
+                        _playerHand.AddCard(_cursorCard);
+                        _cursorCard = null;
+                    }
+
                     // Trying to discard a card
                     if (_testDeck.Hover(CardPile.Discard))
                     {
@@ -344,6 +351,10 @@ namespace MonoDeck
                         }
                         break;
                 }
+            }
+            else
+            {
+
             }
             return false;
         }
