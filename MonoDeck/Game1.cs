@@ -12,7 +12,7 @@ namespace MonoDeck
     // Q Heal All
     // K Upgrade
 
-    // 
+    // Unplayed cards get worse
 
     // Spades add to that cloud and launch orbitals
     // Diamonds add to all orbitals
