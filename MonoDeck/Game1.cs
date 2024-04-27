@@ -8,7 +8,7 @@ using System.Diagnostics;
 namespace MonoDeck
 {
     // A Jump next launch
-    // J Armours
+    // J Armours in suit
     // Q Heal All
     // K Upgrade
 
@@ -367,19 +367,20 @@ namespace MonoDeck
                 }
             }
 
+            int portion;
             switch (_cursorCard.Data.Type)
             {
                 case CardType.Club:
-                    for (var i = 0; i < _cursorCard.Data.Value; i++)
-                    {
+                    portion = _cursorCard.Data.Value / 2;
+                    _weePeeps[activePeep].GainCloudSwarm(_particleCards[(int) _cursorCard.Data.Type], portion);
+                    for (var i = 0; i < _cursorCard.Data.Value - portion; i++)
                         _weePeeps[(activePeep + i) % _weePeeps.Count].GainCloudSwarm(_particleCards[(int) _cursorCard.Data.Type]);
-                    }
                     break;
                 case CardType.Diamond:
-                    for (var i = 0; i < _cursorCard.Data.Value; i++)
-                    {
+                    portion = _cursorCard.Data.Value / 2;
+                    _weePeeps[activePeep].GainOrbitalSwarm(_particleCards[(int) _cursorCard.Data.Type], portion);
+                    for (var i = 0; i < _cursorCard.Data.Value - portion; i++)
                         _weePeeps[(activePeep + i) % _weePeeps.Count].GainOrbitalSwarm(_particleCards[(int) _cursorCard.Data.Type]);
-                    }
                     break;
                 case CardType.Heart:
                     _weePeeps[activePeep].GainHealth(_cursorCard.Data.Value);
@@ -390,6 +391,7 @@ namespace MonoDeck
                     }
                     break;
                 case CardType.Spade:
+                        _weePeeps[activePeep].GainCloudSwarm(_particleCards[(int) _cursorCard.Data.Type], _cursorCard.Data.Value);
                     break;
             }
         }
