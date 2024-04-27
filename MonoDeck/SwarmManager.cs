@@ -30,12 +30,21 @@ namespace MonoDeck
             _type = type;
         }
 
-        public void Update(float deltaTime)
+        public int Update(float deltaTime)
         {
-            foreach (var particle in _swarm)
+            var killList = 0;
+            for (var i = _swarm.Count - 1; i >= 0; i--)
             {
-                particle.Update(deltaTime);
+                if (_swarm[i].State == SwarmPartState.Dead)
+                {
+                    _swarm.RemoveAt(i);
+                    killList++;
+                }
+                else
+                    _swarm[i].Update(deltaTime);
             }
+
+            return killList;
         }
 
         public void Draw(SpriteBatch sB)
@@ -60,6 +69,22 @@ namespace MonoDeck
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public void Launch()
+        {
+            if (_swarm.Count == 0)
+                return;
+
+            switch (_type)
+            {
+                case SwarmType.Cloud:
+                    // trigger one to fall.
+                    _swarm[Game1.RNG.Next(_swarm.Count)].State = SwarmPartState.Attacking;
+                    break;
+                case SwarmType.Orbital:
+                    break;
             }
         }
     }

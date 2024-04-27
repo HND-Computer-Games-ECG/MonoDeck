@@ -241,9 +241,9 @@ namespace MonoDeck
             _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), _characterUISprites, 
                 new Vector2(50, 160), new Point(3, 2)));
             _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), _characterUISprites, 
-                new Vector2(330, 100), new Point(3, 2)));
-            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), _characterUISprites, 
                 new Vector2(200, 250), new Point(3, 2)));
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), _characterUISprites, 
+                new Vector2(330, 100), new Point(3, 2)));
         }
 
         protected override void Update(GameTime gameTime)
@@ -285,14 +285,14 @@ namespace MonoDeck
                     for (var i = 0; i < _weePeeps.Count; i++)
                     {
                         // Trying to play a card on a peep
-                        if (_weePeeps[i].Hover())
+                        if (_weePeeps[i].Hover() && CheckLegalPlay(i))
                         {
-                            if (ProcessCursorCard(i, dT))
-                            {
-                                // Card has been processed, discard it
-                                _testDeck.DiscardCard(_cursorCard);
-                                _cursorCard = null;
-                            }
+                            foreach (var peep in _weePeeps)
+                                peep.LaunchCloudSwarm();
+
+                            ProcessCursorCard(i, dT);
+                            _testDeck.DiscardCard(_cursorCard);
+                            _cursorCard = null;
                         }
                     }
                 }
@@ -320,17 +320,27 @@ namespace MonoDeck
             base.Update(gameTime);
         }
 
-        private bool ProcessCursorCard(int activePeep, float deltaTime)
+        private bool CheckLegalPlay(int activePeep)
         {
-            bool cardUsed = false;
+            bool legalPlay = true;
 
+            if (_cursorCard.Data.Value == (int) Royals.Queen && _weePeeps[activePeep].HP >= _weePeeps[activePeep].HPMax)
+                legalPlay = false;
+
+            if (_cursorCard.Data.Value == (int) Royals.King && _weePeeps[activePeep].CardAffinity != CardColour.None)
+                legalPlay = false;
+
+            return legalPlay;
+        }
+
+        private void ProcessCursorCard(int activePeep, float deltaTime)
+        {
             if (_cursorCard.Data.Rank == CardRank.Royal)
             {
                 switch (_cursorCard.Data.Value)
                 {
                     case (int)Royals.Ace:
                         _weePeeps[activePeep].Jump(deltaTime);
-                        cardUsed = true;
                         break;
                     case (int)Royals.Jack:
                         _weePeeps[activePeep].GainArmour();
@@ -339,7 +349,6 @@ namespace MonoDeck
                             if (peep.CardAffinity == _cursorCard.Data.Colour)
                                 peep.GainArmour();
                         }
-                        cardUsed = true;
                         break;
                     case (int)Royals.Queen:
                         if (_weePeeps[activePeep].HP < _weePeeps[activePeep].HPMax)
@@ -347,14 +356,12 @@ namespace MonoDeck
                             _weePeeps[activePeep].HP = _weePeeps[activePeep].HPMax;
                             foreach (var peep in _weePeeps)
                                 peep.HP = Math.Max(peep.HP, peep.HPMax/2);
-                            cardUsed = true;
                         }
                         break;
                     case (int)Royals.King:
                         if (_weePeeps[activePeep].CardAffinity == CardColour.None)
                         {
                             _weePeeps[activePeep].GainLevel(_cursorCard.Data.Colour);
-                            cardUsed = true;
                         }
                         break;
                 }
@@ -367,14 +374,12 @@ namespace MonoDeck
                     {
                         _weePeeps[(activePeep + i) % _weePeeps.Count].GainCloudSwarm(_particleCards[(int) _cursorCard.Data.Type]);
                     }
-                    cardUsed = true;
                     break;
                 case CardType.Diamond:
                     for (var i = 0; i < _cursorCard.Data.Value; i++)
                     {
                         _weePeeps[(activePeep + i) % _weePeeps.Count].GainOrbitalSwarm(_particleCards[(int) _cursorCard.Data.Type]);
                     }
-                    cardUsed = true;
                     break;
                 case CardType.Heart:
                     _weePeeps[activePeep].GainHealth(_cursorCard.Data.Value);
@@ -383,12 +388,10 @@ namespace MonoDeck
                         if (peep.CardAffinity == _cursorCard.Data.Colour)
                             peep.GainHealth(_cursorCard.Data.Value);
                     }
-                    cardUsed = true;
                     break;
                 case CardType.Spade:
                     break;
             }
-            return cardUsed;
         }
 
         protected override void Draw(GameTime gameTime)

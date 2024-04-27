@@ -4,8 +4,18 @@ using System;
 
 namespace MonoDeck
 {
+    enum SwarmPartState
+    {
+        Entering,
+        Idling,
+        Attacking,
+        Dead
+    }
+
     class SwarmParticle
     {
+        public SwarmPartState State { get; set; }
+
         public Vector2 Pos { get; set; }
         protected Vector2 _anchorPos;
         protected Vector2 _anchorOffset;
@@ -18,6 +28,8 @@ namespace MonoDeck
 
         public SwarmParticle(Texture2D tex, Vector2 pos)
         {
+            State = SwarmPartState.Idling;
+
             _tex = tex;
             Pos = pos;
             _anchorPos = pos;
@@ -30,7 +42,19 @@ namespace MonoDeck
 
         public virtual void Update(float deltaTime)
         {
-            Rotation = (Rotation + _rotSpeed * deltaTime) % MathHelper.TwoPi;
+            switch (State)
+            {
+                case SwarmPartState.Entering:
+                    State = SwarmPartState.Idling;
+                    break;
+                case SwarmPartState.Idling:
+                    Rotation = (Rotation + _rotSpeed * deltaTime) % MathHelper.TwoPi;
+                    break;
+                case SwarmPartState.Attacking:
+                    break;
+                case SwarmPartState.Dead:
+                    break;
+            }
         }
 
         public virtual void Draw(SpriteBatch sB)
@@ -70,10 +94,19 @@ namespace MonoDeck
 
         public override void Update(float deltaTime)
         {
-            _orbitalRotation = (_orbitalRotation + _orbitalSpeed * deltaTime) % MathHelper.TwoPi;
-            _anchorOffset = new Vector2(MathF.Cos(_orbitalRotation), MathF.Sin(_orbitalRotation)) * (_range + MathF.Sin(_orbitalRotation * 2 + _orbitalSeed) * 8);
-
             base.Update(deltaTime);
+
+            switch (State)
+            {
+                case SwarmPartState.Entering:
+                    break;
+                case SwarmPartState.Idling:
+                    _orbitalRotation = (_orbitalRotation + _orbitalSpeed * deltaTime) % MathHelper.TwoPi;
+                    _anchorOffset = new Vector2(MathF.Cos(_orbitalRotation), MathF.Sin(_orbitalRotation)) * (_range + MathF.Sin(_orbitalRotation * 2 + _orbitalSeed) * 8);
+                    break;
+                case SwarmPartState.Attacking:
+                    break;
+            }
         }
     }
 
@@ -87,7 +120,18 @@ namespace MonoDeck
         public override void Update(float deltaTime)
         {
             base.Update(deltaTime);
-            _anchorOffset = new Vector2(MathF.Cos(_orbitalRotation) * _range/2 , MathF.Sin(_orbitalRotation) * _range/8 - (_range + MathF.Cos(_orbitalRotation * 3 + _orbitalSeed) * 2));
+
+            switch (State)
+            {
+                case SwarmPartState.Entering:
+                    break;
+                case SwarmPartState.Idling:
+                    _anchorOffset = new Vector2(MathF.Cos(_orbitalRotation) * _range/2 , MathF.Sin(_orbitalRotation) * _range/8 - (_range + MathF.Cos(_orbitalRotation * 3 + _orbitalSeed) * 2));
+                    break;
+                case SwarmPartState.Attacking:
+                    State = SwarmPartState.Dead;
+                    break;
+            }
         }
     }
 }
