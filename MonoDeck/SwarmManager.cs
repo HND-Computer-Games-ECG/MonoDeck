@@ -84,6 +84,8 @@ namespace MonoDeck
                     _swarm[Game1.RNG.Next(_swarm.Count)].State = SwarmPartState.Attacking;
                     break;
                 case SwarmType.Orbital:
+                    foreach (var particle in _swarm)
+                        particle.State = SwarmPartState.Attacking;
                     break;
             }
         }

@@ -105,6 +105,7 @@ namespace MonoDeck
                     _anchorOffset = new Vector2(MathF.Cos(_orbitalRotation), MathF.Sin(_orbitalRotation)) * (_range + MathF.Sin(_orbitalRotation * 2 + _orbitalSeed) * 8);
                     break;
                 case SwarmPartState.Attacking:
+                    State = SwarmPartState.Dead;
                     break;
             }
         }

@@ -371,18 +371,21 @@ namespace MonoDeck
             switch (_cursorCard.Data.Type)
             {
                 case CardType.Club:
+                    // Cloud swarm to value with splash
                     portion = _cursorCard.Data.Value / 2;
                     _weePeeps[activePeep].GainCloudSwarm(_particleCards[(int) _cursorCard.Data.Type], portion);
                     for (var i = 0; i < _cursorCard.Data.Value - portion; i++)
                         _weePeeps[(activePeep + i) % _weePeeps.Count].GainCloudSwarm(_particleCards[(int) _cursorCard.Data.Type]);
                     break;
                 case CardType.Diamond:
+                    // Orbital swarm to value with splash
                     portion = _cursorCard.Data.Value / 2;
                     _weePeeps[activePeep].GainOrbitalSwarm(_particleCards[(int) _cursorCard.Data.Type], portion);
                     for (var i = 0; i < _cursorCard.Data.Value - portion; i++)
                         _weePeeps[(activePeep + i) % _weePeeps.Count].GainOrbitalSwarm(_particleCards[(int) _cursorCard.Data.Type]);
                     break;
                 case CardType.Heart:
+                    // Heal to value
                     _weePeeps[activePeep].GainHealth(_cursorCard.Data.Value);
                     foreach (var peep in _weePeeps)
                     {
@@ -391,7 +394,10 @@ namespace MonoDeck
                     }
                     break;
                 case CardType.Spade:
+                        // Cloud swarm the spades to value
                         _weePeeps[activePeep].GainCloudSwarm(_particleCards[(int) _cursorCard.Data.Type], _cursorCard.Data.Value);
+                        foreach (var peep in _weePeeps)
+                            peep.LaunchOrbitalSwarm();
                     break;
             }
         }
