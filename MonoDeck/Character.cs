@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -64,6 +65,8 @@ namespace MonoDeck
         }
 
         private int _armour;
+
+        private List<CardData> _hand;
 
         /// <summary>
         /// Character Constructor
@@ -133,6 +136,8 @@ namespace MonoDeck
             HPMax = 16;
             _hp = 12;
             _armour = 0;
+
+            _hand = new List<CardData>();
         }
 
         public void Update(float deltaTime, Point mousePos)
@@ -195,7 +200,7 @@ namespace MonoDeck
 
         }
 
-        public void Draw(SpriteBatch sB)
+        public void Draw(SpriteBatch sB, List<Texture2D> handCards)
         {
             switch (_cState)
             {
@@ -223,11 +228,12 @@ namespace MonoDeck
             if (_screenTint != Color.White)
                 return;
 
-            DrawStats(sB);
+            DrawStats(sB, handCards);
         }
 
-        private void DrawStats(SpriteBatch sB)
+        private void DrawStats(SpriteBatch sB, List<Texture2D> handCards)
         {
+            // Health Drawing
             int i;
             int healthY = (int)_currPos.Y;
             for (i = 0; i < _hp / 4; i++)
@@ -263,12 +269,19 @@ namespace MonoDeck
                 sB.Draw(_emptyHeartTxr, new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1), healthY),
                     Color.White * 0.9f);
 
+            // Armour Drawing
             for (i = 0; i < _armour; i++)
             {
                 sB.Draw(_armourChromaTxr, new Vector2(_currPos.X + i * _armourChromaTxr.Width, healthY - 15),
                     _bodyTint * 0.9f);
                 sB.Draw(_armourOverlayTxr, new Vector2(_currPos.X + i * _armourOverlayTxr.Width, healthY - 15),
                     Color.White * 0.9f);
+            }
+
+            // Hand Drawing
+            for (var j = 0; j < _hand.Count; j++)
+            {
+                sB.Draw(handCards[_hand[j].Idx], Pos + new Vector2(70) + new Vector2(j * handCards[0].Width/2, 0), Color.White);
             }
         }
 
@@ -330,6 +343,109 @@ namespace MonoDeck
         public void GainHealth(int amount = 1)
         {
             HP += amount;
+        }
+
+        public int GainCard(CardData cardData)
+        {
+            _hand.Add(cardData);
+
+            if (_hand.Count != 3) 
+                return 0;
+
+            var tmp = ScoreHand();
+            Debug.WriteLine($"Gaining {tmp} free cards!");
+            _hand.Clear();
+            return tmp;
+
+        }
+
+        private int ScoreHand()
+        {
+            int RankedValue(CardData cardData)
+            {
+                return cardData.Rank == CardRank.Basic ? cardData.Value : cardData.Value + 9;
+            }
+
+            bool IsInSequence()
+            {
+                var sequenceOrdered = _hand.OrderBy(o => o.Value).ToList();
+
+                // Got an ace, handle special case
+                if (sequenceOrdered[0].Value == 1)
+                {
+                    if (sequenceOrdered[1].Rank == CardRank.Basic && sequenceOrdered[2].Rank == CardRank.Basic)
+                    {
+                        if (sequenceOrdered[1].Value == 2 && sequenceOrdered[2].Value == 3)
+                        {
+                            //Debug.WriteLine("Got a wheel sequence!");
+                            return true;
+                        }
+                    }
+                    else if (sequenceOrdered[1].Rank == CardRank.Royal && sequenceOrdered[2].Rank == CardRank.Royal)
+                    {
+                        if (sequenceOrdered[1].Value == 3 && sequenceOrdered[2].Value == 4)
+                        {
+                            //Debug.WriteLine("Got a broadway sequence!");
+                            return true;
+                        }
+                    }
+                }
+
+                sequenceOrdered = _hand.OrderBy(RankedValue).ToList();
+
+                //string tmp = "Hand is: ";
+                //foreach (var card in sequenceOrdered)
+                //{
+                //    tmp += $"{card.Value}, ";
+                //}
+                //Debug.WriteLine(tmp);
+                for (var i = 0; i < sequenceOrdered.Count - 1; i++)
+                {
+                    if (RankedValue(sequenceOrdered[i + 1]) - RankedValue(sequenceOrdered[i]) != 1)
+                        return false;
+                }
+
+                return true;
+            }
+            bool IsSameSuit()
+            {
+                var referenceType = _hand[0].Type;
+                for (var i = 1; i < _hand.Count; i++)
+                {
+                    if (_hand[i].Type != referenceType)
+                        return false;
+                }
+                return true;
+            }
+            bool IsSameValue()
+            {
+                var referenceValue = _hand[0].Value;
+                for (var i = 1; i < _hand.Count; i++)
+                {
+                    if (_hand[i].Value != referenceValue)
+                        return false;
+                }
+                return true;
+            }
+            bool HasPair()
+            {
+                var sequenceOrdered = _hand.OrderBy(RankedValue).ToList();
+
+                return RankedValue(sequenceOrdered[0]) == RankedValue(sequenceOrdered[1]) 
+                       || RankedValue(sequenceOrdered[1]) == RankedValue(sequenceOrdered[2]);
+            }
+
+            if (IsInSequence() && IsSameSuit()) // Straight Flush
+                return 10;
+            if (IsSameValue())                  // 3 of a Kind
+                return 7;
+            if (IsSameSuit())                   // Flush
+                return 5;
+            if (IsInSequence())                 // Straight
+                return 3;
+            if (HasPair())                      // Pair
+                return 2;
+            return 1;                           // High Card
         }
 
         public void GainCloudSwarm(Texture2D tex, int amount = 1)

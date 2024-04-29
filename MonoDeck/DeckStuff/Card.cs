@@ -46,13 +46,15 @@ namespace MonoDeck
     /// </summary>
     struct CardData
     {
+        public int Idx;
         public CardType Type;
         public CardColour Colour;
         public CardRank Rank;
         public int Value;
 
-        public CardData(CardType ctype, CardColour colour, CardRank rank, int value)
+        public CardData(int idx, CardType ctype, CardColour colour, CardRank rank, int value)
         {
+            Idx = idx;
             Type = ctype; 
             Colour = colour; 
             Rank = rank; 
@@ -61,7 +63,7 @@ namespace MonoDeck
 
         public string DebugInfo()
         {
-            return ($"**Card Info**:\nType: {Type}\nColour: {Colour}\nRank: {Rank}\nValue:{Value}\n");
+            return ($"**Card Info**:\nType: {Idx}\nType: {Type}\nColour: {Colour}\nRank: {Rank}\nValue:{Value}\n");
         }
     }
 

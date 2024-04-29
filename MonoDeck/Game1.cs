@@ -33,6 +33,7 @@ namespace MonoDeck
         // Variables for data management
         List<Texture2D> _allCardBacks;
         List<Texture2D> _allCardFaces;
+        private List<Texture2D> _allMiniCardFaces;
         List<CardData> _allCardData;
 
         List<Texture2D> _particleCards;
@@ -61,62 +62,62 @@ namespace MonoDeck
             // Set up the card info
             _allCardData = new List<CardData>
             {
-                new (CardType.Club, CardColour.Black, CardRank.Royal, 1),
-                new (CardType.Club, CardColour.Black, CardRank.Basic, 2),
-                new (CardType.Club, CardColour.Black, CardRank.Basic, 3),
-                new (CardType.Club, CardColour.Black, CardRank.Basic, 4),
-                new (CardType.Club, CardColour.Black, CardRank.Basic, 5),
-                new (CardType.Club, CardColour.Black, CardRank.Basic, 6),
-                new (CardType.Club, CardColour.Black, CardRank.Basic, 7),
-                new (CardType.Club, CardColour.Black, CardRank.Basic, 8),
-                new (CardType.Club, CardColour.Black, CardRank.Basic, 9),
-                new (CardType.Club, CardColour.Black, CardRank.Basic, 10),
-                new (CardType.Club, CardColour.Black, CardRank.Royal, 2),
-                new (CardType.Club, CardColour.Black, CardRank.Royal, 3),
-                new (CardType.Club, CardColour.Black, CardRank.Royal, 4),
-                new (CardType.Diamond, CardColour.Red, CardRank.Royal, 1),
-                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 2),
-                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 3),
-                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 4),
-                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 5),
-                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 6),
-                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 7),
-                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 8),
-                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 9),
-                new (CardType.Diamond, CardColour.Red, CardRank.Basic, 10),
-                new (CardType.Diamond, CardColour.Red, CardRank.Royal, 2),
-                new (CardType.Diamond, CardColour.Red, CardRank.Royal, 3),
-                new (CardType.Diamond, CardColour.Red, CardRank.Royal, 4),
-                new (CardType.Heart, CardColour.Red, CardRank.Royal, 1),
-                new (CardType.Heart, CardColour.Red, CardRank.Basic, 2),
-                new (CardType.Heart, CardColour.Red, CardRank.Basic, 3),
-                new (CardType.Heart, CardColour.Red, CardRank.Basic, 4),
-                new (CardType.Heart, CardColour.Red, CardRank.Basic, 5),
-                new (CardType.Heart, CardColour.Red, CardRank.Basic, 6),
-                new (CardType.Heart, CardColour.Red, CardRank.Basic, 7),
-                new (CardType.Heart, CardColour.Red, CardRank.Basic, 8),
-                new (CardType.Heart, CardColour.Red, CardRank.Basic, 9),
-                new (CardType.Heart, CardColour.Red, CardRank.Basic, 10),
-                new (CardType.Heart, CardColour.Red, CardRank.Royal, 2),
-                new (CardType.Heart, CardColour.Red, CardRank.Royal, 3),
-                new (CardType.Heart, CardColour.Red, CardRank.Royal, 4),
-                new (CardType.Spade, CardColour.Black, CardRank.Royal, 1),
-                new (CardType.Spade, CardColour.Black, CardRank.Basic, 2),
-                new (CardType.Spade, CardColour.Black, CardRank.Basic, 3),
-                new (CardType.Spade, CardColour.Black, CardRank.Basic, 4),
-                new (CardType.Spade, CardColour.Black, CardRank.Basic, 5),
-                new (CardType.Spade, CardColour.Black, CardRank.Basic, 6),
-                new (CardType.Spade, CardColour.Black, CardRank.Basic, 7),
-                new (CardType.Spade, CardColour.Black, CardRank.Basic, 8),
-                new (CardType.Spade, CardColour.Black, CardRank.Basic, 9),
-                new (CardType.Spade, CardColour.Black, CardRank.Basic, 10),
-                new (CardType.Spade, CardColour.Black, CardRank.Royal, 2),
-                new (CardType.Spade, CardColour.Black, CardRank.Royal, 3),
-                new (CardType.Spade, CardColour.Black, CardRank.Royal, 4),
+                new (0, CardType.Club, CardColour.Black, CardRank.Royal, 1),
+                new (1, CardType.Club, CardColour.Black, CardRank.Basic, 2),
+                new (2, CardType.Club, CardColour.Black, CardRank.Basic, 3),
+                new (3, CardType.Club, CardColour.Black, CardRank.Basic, 4),
+                new (4, CardType.Club, CardColour.Black, CardRank.Basic, 5),
+                new (5, CardType.Club, CardColour.Black, CardRank.Basic, 6),
+                new (6, CardType.Club, CardColour.Black, CardRank.Basic, 7),
+                new (7, CardType.Club, CardColour.Black, CardRank.Basic, 8),
+                new (8, CardType.Club, CardColour.Black, CardRank.Basic, 9),
+                new (9, CardType.Club, CardColour.Black, CardRank.Basic, 10),
+                new (10, CardType.Club, CardColour.Black, CardRank.Royal, 2),
+                new (11, CardType.Club, CardColour.Black, CardRank.Royal, 3),
+                new (12, CardType.Club, CardColour.Black, CardRank.Royal, 4),
+                new (13, CardType.Diamond, CardColour.Red, CardRank.Royal, 1),
+                new (14, CardType.Diamond, CardColour.Red, CardRank.Basic, 2),
+                new (15, CardType.Diamond, CardColour.Red, CardRank.Basic, 3),
+                new (16, CardType.Diamond, CardColour.Red, CardRank.Basic, 4),
+                new (17, CardType.Diamond, CardColour.Red, CardRank.Basic, 5),
+                new (18, CardType.Diamond, CardColour.Red, CardRank.Basic, 6),
+                new (19, CardType.Diamond, CardColour.Red, CardRank.Basic, 7),
+                new (20, CardType.Diamond, CardColour.Red, CardRank.Basic, 8),
+                new (21, CardType.Diamond, CardColour.Red, CardRank.Basic, 9),
+                new (22, CardType.Diamond, CardColour.Red, CardRank.Basic, 10),
+                new (23, CardType.Diamond, CardColour.Red, CardRank.Royal, 2),
+                new (24, CardType.Diamond, CardColour.Red, CardRank.Royal, 3),
+                new (25, CardType.Diamond, CardColour.Red, CardRank.Royal, 4),
+                new (26, CardType.Heart, CardColour.Red, CardRank.Royal, 1),
+                new (27, CardType.Heart, CardColour.Red, CardRank.Basic, 2),
+                new (28, CardType.Heart, CardColour.Red, CardRank.Basic, 3),
+                new (29, CardType.Heart, CardColour.Red, CardRank.Basic, 4),
+                new (30, CardType.Heart, CardColour.Red, CardRank.Basic, 5),
+                new (31, CardType.Heart, CardColour.Red, CardRank.Basic, 6),
+                new (32, CardType.Heart, CardColour.Red, CardRank.Basic, 7),
+                new (33, CardType.Heart, CardColour.Red, CardRank.Basic, 8),
+                new (34, CardType.Heart, CardColour.Red, CardRank.Basic, 9),
+                new (35, CardType.Heart, CardColour.Red, CardRank.Basic, 10),
+                new (36, CardType.Heart, CardColour.Red, CardRank.Royal, 2),
+                new (37, CardType.Heart, CardColour.Red, CardRank.Royal, 3),
+                new (38, CardType.Heart, CardColour.Red, CardRank.Royal, 4),
+                new (39, CardType.Spade, CardColour.Black, CardRank.Royal, 1),
+                new (40, CardType.Spade, CardColour.Black, CardRank.Basic, 2),
+                new (41, CardType.Spade, CardColour.Black, CardRank.Basic, 3),
+                new (42, CardType.Spade, CardColour.Black, CardRank.Basic, 4),
+                new (43, CardType.Spade, CardColour.Black, CardRank.Basic, 5),
+                new (44, CardType.Spade, CardColour.Black, CardRank.Basic, 6),
+                new (45, CardType.Spade, CardColour.Black, CardRank.Basic, 7),
+                new (46, CardType.Spade, CardColour.Black, CardRank.Basic, 8),
+                new (47, CardType.Spade, CardColour.Black, CardRank.Basic, 9),
+                new (48, CardType.Spade, CardColour.Black, CardRank.Basic, 10),
+                new (49, CardType.Spade, CardColour.Black, CardRank.Royal, 2),
+                new (50, CardType.Spade, CardColour.Black, CardRank.Royal, 3),
+                new (51, CardType.Spade, CardColour.Black, CardRank.Royal, 4),
             };
 
             // Create a "hand" structure to hold player's cards
-            _playerHand = new Hand(new Vector2(_graphics.PreferredBackBufferWidth/2 - 70, _graphics.PreferredBackBufferHeight - 75), 7);
+            _playerHand = new Hand(new Vector2(_graphics.PreferredBackBufferWidth/2 - 35, _graphics.PreferredBackBufferHeight - 75), 15);
 
             // Cursor starts not "holding" a card
             _cursorCard = null;
@@ -209,6 +210,61 @@ namespace MonoDeck
                 Content.Load<Texture2D>("Cards/Faces/cardSpadesQ"),
                 Content.Load<Texture2D>("Cards/Faces/cardSpadesK"),
             };
+            _allMiniCardFaces = new List<Texture2D>()
+            {
+                Content.Load<Texture2D>("Cards/Minis/card_clubs_A"),
+                Content.Load<Texture2D>("Cards/Minis/card_clubs_02"),
+                Content.Load<Texture2D>("Cards/Minis/card_clubs_03"),
+                Content.Load<Texture2D>("Cards/Minis/card_clubs_04"),
+                Content.Load<Texture2D>("Cards/Minis/card_clubs_05"),
+                Content.Load<Texture2D>("Cards/Minis/card_clubs_06"),
+                Content.Load<Texture2D>("Cards/Minis/card_clubs_07"),
+                Content.Load<Texture2D>("Cards/Minis/card_clubs_08"),
+                Content.Load<Texture2D>("Cards/Minis/card_clubs_09"),
+                Content.Load<Texture2D>("Cards/Minis/card_clubs_10"),
+                Content.Load<Texture2D>("Cards/Minis/card_clubs_J"),
+                Content.Load<Texture2D>("Cards/Minis/card_clubs_Q"),
+                Content.Load<Texture2D>("Cards/Minis/card_clubs_K"),
+                Content.Load<Texture2D>("Cards/Minis/card_diamonds_A"),
+                Content.Load<Texture2D>("Cards/Minis/card_diamonds_02"),
+                Content.Load<Texture2D>("Cards/Minis/card_diamonds_03"),
+                Content.Load<Texture2D>("Cards/Minis/card_diamonds_04"),
+                Content.Load<Texture2D>("Cards/Minis/card_diamonds_05"),
+                Content.Load<Texture2D>("Cards/Minis/card_diamonds_06"),
+                Content.Load<Texture2D>("Cards/Minis/card_diamonds_07"),
+                Content.Load<Texture2D>("Cards/Minis/card_diamonds_08"),
+                Content.Load<Texture2D>("Cards/Minis/card_diamonds_09"),
+                Content.Load<Texture2D>("Cards/Minis/card_diamonds_10"),
+                Content.Load<Texture2D>("Cards/Minis/card_diamonds_J"),
+                Content.Load<Texture2D>("Cards/Minis/card_diamonds_Q"),
+                Content.Load<Texture2D>("Cards/Minis/card_diamonds_K"),
+                Content.Load<Texture2D>("Cards/Minis/card_hearts_A"),
+                Content.Load<Texture2D>("Cards/Minis/card_hearts_02"),
+                Content.Load<Texture2D>("Cards/Minis/card_hearts_03"),
+                Content.Load<Texture2D>("Cards/Minis/card_hearts_04"),
+                Content.Load<Texture2D>("Cards/Minis/card_hearts_05"),
+                Content.Load<Texture2D>("Cards/Minis/card_hearts_06"),
+                Content.Load<Texture2D>("Cards/Minis/card_hearts_07"),
+                Content.Load<Texture2D>("Cards/Minis/card_hearts_08"),
+                Content.Load<Texture2D>("Cards/Minis/card_hearts_09"),
+                Content.Load<Texture2D>("Cards/Minis/card_hearts_10"),
+                Content.Load<Texture2D>("Cards/Minis/card_hearts_J"),
+                Content.Load<Texture2D>("Cards/Minis/card_hearts_Q"),
+                Content.Load<Texture2D>("Cards/Minis/card_hearts_K"),
+                Content.Load<Texture2D>("Cards/Minis/card_spades_A"),
+                Content.Load<Texture2D>("Cards/Minis/card_spades_02"),
+                Content.Load<Texture2D>("Cards/Minis/card_spades_03"),
+                Content.Load<Texture2D>("Cards/Minis/card_spades_04"),
+                Content.Load<Texture2D>("Cards/Minis/card_spades_05"),
+                Content.Load<Texture2D>("Cards/Minis/card_spades_06"),
+                Content.Load<Texture2D>("Cards/Minis/card_spades_07"),
+                Content.Load<Texture2D>("Cards/Minis/card_spades_08"),
+                Content.Load<Texture2D>("Cards/Minis/card_spades_09"),
+                Content.Load<Texture2D>("Cards/Minis/card_spades_10"),
+                Content.Load<Texture2D>("Cards/Minis/card_spades_J"),
+                Content.Load<Texture2D>("Cards/Minis/card_spades_Q"),
+                Content.Load<Texture2D>("Cards/Minis/card_spades_K"),
+            };
             _particleCards = new List<Texture2D>
             {
                 Content.Load<Texture2D>("Cards/ParticleCards/Club"),
@@ -291,6 +347,12 @@ namespace MonoDeck
                                 peep.LaunchCloudSwarm();
 
                             ProcessCursorCard(i, dT);
+                            var freeCards = _weePeeps[i].GainCard(_cursorCard.Data);
+                            for (var j = 0; j < freeCards; j++)
+                            {
+                                if (!_playerHand.IsFull && !_testDeck.IsEmpty)
+                                    _playerHand.AddCard(_testDeck.PullCard());
+                            }
                             _testDeck.DiscardCard(_cursorCard);
                             _cursorCard = null;
                         }
@@ -301,7 +363,11 @@ namespace MonoDeck
                 {
                     // Trying to draw a card, but check if the hand is full or the deck is empty first!
                     if (_testDeck.Hover(CardPile.Draw) && !_playerHand.IsFull && !_testDeck.IsEmpty)
+                    {
+                        foreach (var peep in _weePeeps)
+                            peep.LaunchCloudSwarm();
                         _playerHand.AddCard(_testDeck.PullCard());
+                    }
 
                     // Trying to shuffle the discards back in the deck, but check if there *is* discards to shuffle back in first!
                     if (_testDeck.Hover(CardPile.Discard) && !_testDeck.IsDiscardEmpty)
@@ -411,12 +477,11 @@ namespace MonoDeck
             _testDeck.Draw(_spriteBatch);
 
             foreach (var peep in _weePeeps)
-                peep.Draw(_spriteBatch);
+                peep.Draw(_spriteBatch, _allMiniCardFaces);
 
             _playerHand.Draw(_spriteBatch);
 
-            if (_cursorCard != null)
-                _cursorCard.DrawMini(_spriteBatch, ms_curr.Position, FacingState.FaceUp, true);
+            _cursorCard?.DrawMini(_spriteBatch, ms_curr.Position, FacingState.FaceUp, true);
 
 #if DEBUG
             //_spriteBatch.DrawString(_debugFont, _cursorCard == null ? "_cursorCard is null" : _cursorCard.DebugInfo(), ms_curr.Position.ToVector2() + Vector2.One, Color.Black);
