@@ -153,6 +153,27 @@ namespace MonoDeck
 
             _discardPile.Add(newDiscard);
         }
+
+        public void SurfaceDiscard()
+        {
+            if (IsDiscardEmpty)
+                return;
+
+            var tmp = _discardPile[0];
+            _discardPile.RemoveAt(0);
+            _discardPile.Add(tmp);
+
+        }
+
+        public void SinkDiscard()
+        {
+            if (IsDiscardEmpty)
+                return;
+
+            var tmp = _discardPile[^1];
+            _discardPile.RemoveAt(_discardPile.Count-1);
+            _discardPile.Insert(0, tmp);
+        }
         #endregion
 
         /// <summary>

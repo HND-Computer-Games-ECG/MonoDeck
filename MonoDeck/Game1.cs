@@ -4,11 +4,16 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace MonoDeck
 {
+    // Add jokers to seek cards
+
+    // Hand limit based on combined value of cards?
+
     // A Jump next launch
-    // J Armours in suit
+    // J Armours in suit - armour protects against lethal damage
     // Q Heal All
     // K Upgrade
 
@@ -378,6 +383,12 @@ namespace MonoDeck
                         _cursorCard = _playerHand.PullCard();
                 }
             }
+
+            if (ms_curr.ScrollWheelValue < ms_old.ScrollWheelValue)
+                _testDeck.SurfaceDiscard();
+            else if (ms_curr.ScrollWheelValue > ms_old.ScrollWheelValue)
+                _testDeck.SinkDiscard();
+                
             #endregion
 
             // Store what the mouse WAS doing
