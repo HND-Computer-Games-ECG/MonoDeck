@@ -124,7 +124,7 @@ namespace MonoDeck
             };
 
             // Create a "hand" structure to hold player's cards
-            _playerHand = new Hand(new Vector2(_graphics.PreferredBackBufferWidth/2 - 35, _graphics.PreferredBackBufferHeight - 75), 13);
+            _playerHand = new Hand(new Vector2(_graphics.PreferredBackBufferWidth/2 - 35, _graphics.PreferredBackBufferHeight - 75), 5);
 
             // Cursor starts not "holding" a card
             _cursorCard = null;

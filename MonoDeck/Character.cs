@@ -36,6 +36,8 @@ namespace MonoDeck
         private Texture2D _armourChromaTxr, _armourOverlayTxr;
 
         private List<Rectangle> _StatQuarters;
+        private float _statsFadeSecs;
+        private float _statsAlpha;
 
         public Vector2 Pos { get; }
         private Rectangle _rect;
@@ -128,6 +130,8 @@ namespace MonoDeck
             }
 
             _screenTint = Color.LightGray;
+            _statsFadeSecs = 5;
+            _statsAlpha = 1;
 
             _cState = CharState.Idle;
 
@@ -167,6 +171,10 @@ namespace MonoDeck
 
             _rect.Location = _currPos.ToPoint();
             _screenTint = _rect.Contains(mousePos) ? Color.White : Color.LightGray;
+            if (_screenTint == Color.White || HP < HPMax / 2)
+                _statsAlpha = 1;
+            else
+                _statsAlpha = MathHelper.Clamp(_statsAlpha - deltaTime / _statsFadeSecs, 0, 1);
 
             if (_currPos.Y < Pos.Y)
             {
@@ -244,10 +252,9 @@ namespace MonoDeck
             _cloudSwarm.Draw(sB);
             _orbitalSwarm.Draw(sB);
 
-            if (_screenTint != Color.White)
-                return;
-
             DrawStats(sB, handCards);
+
+
         }
 
         private void DrawStats(SpriteBatch sB, List<Texture2D> handCards)
@@ -257,7 +264,7 @@ namespace MonoDeck
             int healthY = (int)_currPos.Y;
             for (i = 0; i < _hp / 4; i++)
                 sB.Draw(_fullHeartTxr, new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1), healthY),
-                    Color.White * 0.9f);
+                    Color.White * _statsAlpha);
             int quarters = _hp % 4;
 
             if (quarters != 0)
@@ -269,7 +276,7 @@ namespace MonoDeck
                         new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1) + _StatQuarters[0].Width * (j % 2),
                             healthY + _StatQuarters[0].Height * (j / 2)),
                         _StatQuarters[j],
-                        Color.White * 0.9f);
+                        Color.White * _statsAlpha);
                 }
 
                 for (; j < 4; j++)
@@ -278,7 +285,7 @@ namespace MonoDeck
                         new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1) + _StatQuarters[0].Width * (j % 2),
                             healthY + _StatQuarters[0].Height * (j / 2)),
                         _StatQuarters[j],
-                        Color.White * 0.9f);
+                        Color.White * _statsAlpha);
                 }
 
                 i++;
@@ -286,21 +293,21 @@ namespace MonoDeck
 
             for (; i < HPMax / 4; i++)
                 sB.Draw(_emptyHeartTxr, new Vector2(_currPos.X + i * (_fullHeartTxr.Width - 1), healthY),
-                    Color.White * 0.9f);
+                    Color.White * _statsAlpha);
 
             // Armour Drawing
             for (i = 0; i < _armour; i++)
             {
                 sB.Draw(_armourChromaTxr, new Vector2(_currPos.X + i * _armourChromaTxr.Width, healthY - 15),
-                    _bodyTint * 0.9f);
+                    _bodyTint * _statsAlpha);
                 sB.Draw(_armourOverlayTxr, new Vector2(_currPos.X + i * _armourOverlayTxr.Width, healthY - 15),
-                    Color.White * 0.9f);
+                    Color.White * _statsAlpha);
             }
 
             // Hand Drawing
             for (var j = 0; j < _hand.Count; j++)
             {
-                sB.Draw(handCards[_hand[j].Idx], Pos + new Vector2(70) + new Vector2(j * handCards[0].Width/2, 0), Color.White);
+                sB.Draw(handCards[_hand[j].Idx], Pos + new Vector2(70) + new Vector2(j * handCards[0].Width/2, 0), Color.LightGray);
             }
         }
 
