@@ -152,7 +152,12 @@ namespace MonoDeck
         {
             var damageAccumulated = 0;
             damageAccumulated += _cloudSwarm.Update(deltaTime);
-            damageAccumulated += _orbitalSwarm.Update(deltaTime);
+            var orbitalDamage = _orbitalSwarm.Update(deltaTime);
+            if (orbitalDamage > 0)
+                if (TryJump(deltaTime))
+                    orbitalDamage = 0;
+
+            damageAccumulated += orbitalDamage;
 
             if (damageAccumulated > 0)
             {
@@ -315,10 +320,16 @@ namespace MonoDeck
             _moodTimer = duration;
         }
 
-        public void Jump(float deltaTime)
+        public bool TryJump(float deltaTime)
         {
-            _velocity.Y = -800 * deltaTime;
-            _currPos += _velocity;
+            if (_jumpSet)
+            {
+                _velocity.Y = -800 * deltaTime;
+                _currPos += _velocity;
+                _jumpSet = false;
+                return true;
+            }
+            return false;
         }
 
         public void SetJump()
