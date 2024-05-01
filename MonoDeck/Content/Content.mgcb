@@ -200,6 +200,18 @@
 /processorParam:TextureFormat=Color
 /build:Cards/Backs/cardBack_red5.png
 
+#begin Cards/Faces/cardBlackJoker.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Cards/Faces/cardBlackJoker.png
+
 #begin Cards/Faces/cardClubs10.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -668,7 +680,7 @@
 /processorParam:TextureFormat=Color
 /build:Cards/Faces/cardHeartsQ.png
 
-#begin Cards/Faces/cardJoker.png
+#begin Cards/Faces/cardRedJoker.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -678,7 +690,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Cards/Faces/cardJoker.png
+/build:Cards/Faces/cardRedJoker.png
 
 #begin Cards/Faces/cardSpades10.png
 /importer:TextureImporter
@@ -1628,7 +1640,7 @@
 /processorParam:TextureFormat=Color
 /build:charsheet_chroma.png
 
-#begin charsheet_overlay.png
+#begin charsheet_overlay_buttons_off.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1638,7 +1650,43 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:charsheet_overlay.png
+/build:charsheet_overlay_buttons_off.png
+
+#begin charsheet_overlay_buttons_on.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:charsheet_overlay_buttons_on.png
+
+#begin charsheet_overlay_dpad.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:charsheet_overlay_dpad.png
+
+#begin charsheet_overlay_face.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:charsheet_overlay_face.png
 
 #begin shield_chroma.png
 /importer:TextureImporter

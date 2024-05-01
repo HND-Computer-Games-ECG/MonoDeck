@@ -67,7 +67,7 @@ namespace MonoDeck
             // Set up the card info
             _allCardData = new List<CardData>
             {
-                new (0, CardType.Club, CardColour.Black, CardRank.Royal, 1),
+                new (0, CardType.Club, CardColour.Black, CardRank.Court, 1),
                 new (1, CardType.Club, CardColour.Black, CardRank.Basic, 2),
                 new (2, CardType.Club, CardColour.Black, CardRank.Basic, 3),
                 new (3, CardType.Club, CardColour.Black, CardRank.Basic, 4),
@@ -77,10 +77,10 @@ namespace MonoDeck
                 new (7, CardType.Club, CardColour.Black, CardRank.Basic, 8),
                 new (8, CardType.Club, CardColour.Black, CardRank.Basic, 9),
                 new (9, CardType.Club, CardColour.Black, CardRank.Basic, 10),
-                new (10, CardType.Club, CardColour.Black, CardRank.Royal, 2),
-                new (11, CardType.Club, CardColour.Black, CardRank.Royal, 3),
-                new (12, CardType.Club, CardColour.Black, CardRank.Royal, 4),
-                new (13, CardType.Diamond, CardColour.Red, CardRank.Royal, 1),
+                new (10, CardType.Club, CardColour.Black, CardRank.Court, 2),
+                new (11, CardType.Club, CardColour.Black, CardRank.Court, 3),
+                new (12, CardType.Club, CardColour.Black, CardRank.Court, 4),
+                new (13, CardType.Diamond, CardColour.Red, CardRank.Court, 1),
                 new (14, CardType.Diamond, CardColour.Red, CardRank.Basic, 2),
                 new (15, CardType.Diamond, CardColour.Red, CardRank.Basic, 3),
                 new (16, CardType.Diamond, CardColour.Red, CardRank.Basic, 4),
@@ -90,10 +90,10 @@ namespace MonoDeck
                 new (20, CardType.Diamond, CardColour.Red, CardRank.Basic, 8),
                 new (21, CardType.Diamond, CardColour.Red, CardRank.Basic, 9),
                 new (22, CardType.Diamond, CardColour.Red, CardRank.Basic, 10),
-                new (23, CardType.Diamond, CardColour.Red, CardRank.Royal, 2),
-                new (24, CardType.Diamond, CardColour.Red, CardRank.Royal, 3),
-                new (25, CardType.Diamond, CardColour.Red, CardRank.Royal, 4),
-                new (26, CardType.Heart, CardColour.Red, CardRank.Royal, 1),
+                new (23, CardType.Diamond, CardColour.Red, CardRank.Court, 2),
+                new (24, CardType.Diamond, CardColour.Red, CardRank.Court, 3),
+                new (25, CardType.Diamond, CardColour.Red, CardRank.Court, 4),
+                new (26, CardType.Heart, CardColour.Red, CardRank.Court, 1),
                 new (27, CardType.Heart, CardColour.Red, CardRank.Basic, 2),
                 new (28, CardType.Heart, CardColour.Red, CardRank.Basic, 3),
                 new (29, CardType.Heart, CardColour.Red, CardRank.Basic, 4),
@@ -103,10 +103,10 @@ namespace MonoDeck
                 new (33, CardType.Heart, CardColour.Red, CardRank.Basic, 8),
                 new (34, CardType.Heart, CardColour.Red, CardRank.Basic, 9),
                 new (35, CardType.Heart, CardColour.Red, CardRank.Basic, 10),
-                new (36, CardType.Heart, CardColour.Red, CardRank.Royal, 2),
-                new (37, CardType.Heart, CardColour.Red, CardRank.Royal, 3),
-                new (38, CardType.Heart, CardColour.Red, CardRank.Royal, 4),
-                new (39, CardType.Spade, CardColour.Black, CardRank.Royal, 1),
+                new (36, CardType.Heart, CardColour.Red, CardRank.Court, 2),
+                new (37, CardType.Heart, CardColour.Red, CardRank.Court, 3),
+                new (38, CardType.Heart, CardColour.Red, CardRank.Court, 4),
+                new (39, CardType.Spade, CardColour.Black, CardRank.Court, 1),
                 new (40, CardType.Spade, CardColour.Black, CardRank.Basic, 2),
                 new (41, CardType.Spade, CardColour.Black, CardRank.Basic, 3),
                 new (42, CardType.Spade, CardColour.Black, CardRank.Basic, 4),
@@ -116,9 +116,11 @@ namespace MonoDeck
                 new (46, CardType.Spade, CardColour.Black, CardRank.Basic, 8),
                 new (47, CardType.Spade, CardColour.Black, CardRank.Basic, 9),
                 new (48, CardType.Spade, CardColour.Black, CardRank.Basic, 10),
-                new (49, CardType.Spade, CardColour.Black, CardRank.Royal, 2),
-                new (50, CardType.Spade, CardColour.Black, CardRank.Royal, 3),
-                new (51, CardType.Spade, CardColour.Black, CardRank.Royal, 4),
+                new (49, CardType.Spade, CardColour.Black, CardRank.Court, 2),
+                new (50, CardType.Spade, CardColour.Black, CardRank.Court, 3),
+                new (51, CardType.Spade, CardColour.Black, CardRank.Court, 4),
+                new (52, CardType.None, CardColour.Black, CardRank.Court, 5),
+                new (53, CardType.None, CardColour.Red, CardRank.Court, 5),
             };
 
             // Create a "hand" structure to hold player's cards
@@ -214,6 +216,8 @@ namespace MonoDeck
                 Content.Load<Texture2D>("Cards/Faces/cardSpadesJ"),
                 Content.Load<Texture2D>("Cards/Faces/cardSpadesQ"),
                 Content.Load<Texture2D>("Cards/Faces/cardSpadesK"),
+                Content.Load<Texture2D>("Cards/Faces/cardBlackJoker"),
+                Content.Load<Texture2D>("Cards/Faces/cardRedJoker"),
             };
             _allMiniCardFaces = new List<Texture2D>()
             {
@@ -269,6 +273,9 @@ namespace MonoDeck
                 Content.Load<Texture2D>("Cards/Minis/card_spades_J"),
                 Content.Load<Texture2D>("Cards/Minis/card_spades_Q"),
                 Content.Load<Texture2D>("Cards/Minis/card_spades_K"),
+                Content.Load<Texture2D>("Cards/Minis/card_joker_black"),
+                Content.Load<Texture2D>("Cards/Minis/card_joker_red"),
+
             };
             _particleCards = new List<Texture2D>
             {
@@ -287,6 +294,7 @@ namespace MonoDeck
 
             // The card faces need to match up with the card data set up in Initialise or this won't work - so let's check for that
             Debug.Assert(_allCardFaces.Count == _allCardData.Count, "Card face count does not match card data count");
+            Debug.Assert(_allCardFaces.Count == _allMiniCardFaces.Count, "Card face count does not match card data count");
 
             // Create a deck structure to hold all the cards - pick a random card back for it too.
             _testDeck = new Deck(_allCardBacks[RNG.Next(_allCardBacks.Count)], new Vector2(_graphics.PreferredBackBufferWidth - 250, 25));
@@ -299,11 +307,26 @@ namespace MonoDeck
             _testDeck.Shuffle();
 
             // Create the peeps and add them to the list for easy management
-            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), _characterUISprites, 
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"),
+                Content.Load<Texture2D>("charsheet_overlay_face"),
+                Content.Load<Texture2D>("charsheet_overlay_dpad"),
+                Content.Load<Texture2D>("charsheet_overlay_buttons_on"),
+                Content.Load<Texture2D>("charsheet_overlay_buttons_off"),
+                _characterUISprites, 
                 new Vector2(50, 160), new Point(3, 2)));
-            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), _characterUISprites, 
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"),
+                Content.Load<Texture2D>("charsheet_overlay_face"),
+                Content.Load<Texture2D>("charsheet_overlay_dpad"),
+                Content.Load<Texture2D>("charsheet_overlay_buttons_on"),
+                Content.Load<Texture2D>("charsheet_overlay_buttons_off"),
+                _characterUISprites, 
                 new Vector2(200, 250), new Point(3, 2)));
-            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), _characterUISprites, 
+            _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"),
+                Content.Load<Texture2D>("charsheet_overlay_face"),
+                Content.Load<Texture2D>("charsheet_overlay_dpad"),
+                Content.Load<Texture2D>("charsheet_overlay_buttons_on"),
+                Content.Load<Texture2D>("charsheet_overlay_buttons_off"),
+                _characterUISprites, 
                 new Vector2(330, 100), new Point(3, 2)));
         }
 
@@ -352,13 +375,17 @@ namespace MonoDeck
                                 peep.LaunchCloudSwarm();
 
                             ProcessCursorCard(i, dT);
-                            var freeCards = _weePeeps[i].GainCard(_cursorCard.Data);
-                            for (var j = 0; j < freeCards; j++)
+
+                            if (_cursorCard.Data.Type != CardType.None)     // Cardtype.none is a joker, so it's destroyed instead of going into peep hands and discards
                             {
-                                if (!_playerHand.IsFull && !_testDeck.IsEmpty)
-                                    _playerHand.AddCard(_testDeck.PullCard());
+                                var freeCards = _weePeeps[i].GainCard(_cursorCard.Data);
+                                for (var j = 0; j < freeCards; j++)
+                                {
+                                    if (!_playerHand.IsFull && !_testDeck.IsEmpty)
+                                        _playerHand.AddCard(_testDeck.PullCard());
+                                }
+                                _testDeck.DiscardCard(_cursorCard);
                             }
-                            _testDeck.DiscardCard(_cursorCard);
                             _cursorCard = null;
                         }
                     }
@@ -384,10 +411,14 @@ namespace MonoDeck
                 }
             }
 
-            if (ms_curr.ScrollWheelValue < ms_old.ScrollWheelValue)
-                _testDeck.SurfaceDiscard();
-            else if (ms_curr.ScrollWheelValue > ms_old.ScrollWheelValue)
-                _testDeck.SinkDiscard();
+            // Cycle the discards
+            if (_testDeck.Hover(CardPile.Discard))
+            {
+                if (ms_curr.ScrollWheelValue < ms_old.ScrollWheelValue)
+                    _testDeck.SurfaceDiscard();
+                else if (ms_curr.ScrollWheelValue > ms_old.ScrollWheelValue)
+                    _testDeck.SinkDiscard();
+            }
                 
             #endregion
 
@@ -401,10 +432,10 @@ namespace MonoDeck
         {
             bool legalPlay = true;
 
-            if (_cursorCard.Data.Value == (int) Royals.Queen && _weePeeps[activePeep].HP >= _weePeeps[activePeep].HPMax)
+            if (_cursorCard.Data.Value == (int) CourtCards.Queen && _weePeeps[activePeep].HP >= _weePeeps[activePeep].HPMax)
                 legalPlay = false;
 
-            if (_cursorCard.Data.Value == (int) Royals.King && _weePeeps[activePeep].CardAffinity != CardColour.None)
+            if (_cursorCard.Data.Value == (int) CourtCards.King && _weePeeps[activePeep].CardAffinity != CardColour.None)
                 legalPlay = false;
 
             return legalPlay;
@@ -412,14 +443,14 @@ namespace MonoDeck
 
         private void ProcessCursorCard(int activePeep, float deltaTime)
         {
-            if (_cursorCard.Data.Rank == CardRank.Royal)
+            if (_cursorCard.Data.Rank == CardRank.Court)
             {
                 switch (_cursorCard.Data.Value)
                 {
-                    case (int)Royals.Ace:
-                        _weePeeps[activePeep].Jump(deltaTime);
+                    case (int)CourtCards.Ace:
+                        _weePeeps[activePeep].SetJump();
                         break;
-                    case (int)Royals.Jack:
+                    case (int)CourtCards.Jack:
                         _weePeeps[activePeep].GainArmour();
                         foreach (var peep in _weePeeps)
                         {
@@ -427,7 +458,7 @@ namespace MonoDeck
                                 peep.GainArmour();
                         }
                         break;
-                    case (int)Royals.Queen:
+                    case (int)CourtCards.Queen:
                         if (_weePeeps[activePeep].HP < _weePeeps[activePeep].HPMax)
                         {
                             _weePeeps[activePeep].HP = _weePeeps[activePeep].HPMax;
@@ -435,11 +466,14 @@ namespace MonoDeck
                                 peep.HP = Math.Max(peep.HP, peep.HPMax/2);
                         }
                         break;
-                    case (int)Royals.King:
+                    case (int)CourtCards.King:
                         if (_weePeeps[activePeep].CardAffinity == CardColour.None)
                         {
                             _weePeeps[activePeep].GainLevel(_cursorCard.Data.Colour);
                         }
+                        break;
+                    case (int)CourtCards.Joker:
+                        _playerHand.AddCard(_testDeck.PullDiscard());
                         break;
                 }
             }
@@ -475,6 +509,9 @@ namespace MonoDeck
                         _weePeeps[activePeep].GainCloudSwarm(_particleCards[(int) _cursorCard.Data.Type], _cursorCard.Data.Value);
                         foreach (var peep in _weePeeps)
                             peep.LaunchOrbitalSwarm();
+                    break;
+                case CardType.None:
+                    Debug.WriteLine($"Got a {(CourtCards) _cursorCard.Data.Value}");
                     break;
             }
         }

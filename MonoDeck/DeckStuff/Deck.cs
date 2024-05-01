@@ -174,6 +174,29 @@ namespace MonoDeck
             _discardPile.RemoveAt(_discardPile.Count-1);
             _discardPile.Insert(0, tmp);
         }
+
+        public Card PullDiscard(int location = -1)
+        {
+            if (IsDiscardEmpty)
+            {
+                Debug.WriteLine("Attempt to draw from empty deck!");
+                return null;
+            }
+
+            if (_drawPile.Count <= location)
+            {
+                Debug.WriteLine("Attempt to draw from outside deck bounds!");
+                return null;
+            }
+
+            if (location == -1)
+                location = _discardPile.Count - 1;
+
+            var tmp = _discardPile[location];
+            _discardPile.RemoveAt(location);
+            return tmp;
+        }
+
         #endregion
 
         /// <summary>

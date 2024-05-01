@@ -31,7 +31,7 @@ namespace MonoDeck
 
         private SwarmManager _cloudSwarm, _orbitalSwarm;
 
-        private Texture2D _baseTxr, _overlayTxr;
+        private Texture2D _baseTxr, _faceOverlay, _dpadOverlay, _buttonsOffOverlay, _buttonsOnOverlay;
         private Texture2D _emptyHeartTxr, _fullHeartTxr;
         private Texture2D _armourChromaTxr, _armourOverlayTxr;
 
@@ -57,6 +57,7 @@ namespace MonoDeck
         public int Level;
         public int HPMax;
         private int _hp;
+        private bool _jumpSet;
 
         public int HP
         {
@@ -72,11 +73,15 @@ namespace MonoDeck
         /// Character Constructor
         /// </summary>
         /// <param name="baseTxr">The greyscale texture containing the body (affected by the bodyTint)</param>
-        /// <param name="overlayTxr">The texture containing the overlay (screen, buttons) (affected by the mouseover)</param>
+        /// <param name="faceTxr">The texture containing the overlay (screen, buttons) (affected by the mouseover)</param>
         /// <param name="pos">The base position of the character on screen</param>
         /// <param name="cells">How the texture spritesheets are divided up (grid dimensions</param>
         /// <param name="bodyTint">What colour is the body</param>
-        public Character(Texture2D baseTxr, Texture2D overlayTxr,
+        public Character(Texture2D baseTxr,
+            Texture2D faceTxr,
+            Texture2D dpadTxr,
+            Texture2D butOnTxr,
+            Texture2D butOffTxr,
             List<Texture2D> uiTxrs, Vector2 pos, Point cells)
         {
 
@@ -85,7 +90,10 @@ namespace MonoDeck
             _orbitalSwarm = new SwarmManager(pos + frameSize.ToVector2() / 2, frameSize.ToVector2(), SwarmType.Orbital);
 
             _baseTxr = baseTxr;
-            _overlayTxr = overlayTxr;
+            _faceOverlay = faceTxr;
+            _dpadOverlay = dpadTxr;
+            _buttonsOffOverlay = butOffTxr;
+            _buttonsOnOverlay = butOnTxr;
             _emptyHeartTxr = uiTxrs[0];
             _fullHeartTxr = uiTxrs[1];
             _armourChromaTxr = uiTxrs[2];
@@ -208,15 +216,21 @@ namespace MonoDeck
                 case CharState.Happy:
                 case CharState.Sad:
                     sB.Draw(_baseTxr, Pos, _srcCells[(int)_cState], _bodyTint);
-                    sB.Draw(_overlayTxr, Pos, _srcCells[(int)_cState], _screenTint);
+                    sB.Draw(_faceOverlay, Pos, _srcCells[(int)_cState], _screenTint);
+                    sB.Draw(_dpadOverlay, Pos, _srcCells[(int)_cState], _screenTint);
+                    sB.Draw(_jumpSet ? _buttonsOnOverlay : _buttonsOffOverlay, Pos, _srcCells[(int)_cState], _screenTint);
                     break;
                 case CharState.Walking:
                     sB.Draw(_baseTxr, Pos, _srcCells[3 + _walkStep], _bodyTint);
-                    sB.Draw(_overlayTxr, Pos, _srcCells[3 + _walkStep], _screenTint);
+                    sB.Draw(_faceOverlay, Pos, _srcCells[3 + _walkStep], _screenTint);
+                    sB.Draw(_dpadOverlay, Pos, _srcCells[3 + _walkStep], _screenTint);
+                    sB.Draw(_jumpSet ? _buttonsOnOverlay : _buttonsOffOverlay, Pos, _srcCells[3 + _walkStep], _screenTint);
                     break;
                 case CharState.Jumping:
                     sB.Draw(_baseTxr, _currPos, _srcCells[5], _bodyTint);
-                    sB.Draw(_overlayTxr, _currPos, _srcCells[5], _screenTint);
+                    sB.Draw(_faceOverlay, _currPos, _srcCells[5], _screenTint);
+                    sB.Draw(_dpadOverlay, _currPos, _srcCells[5], _screenTint);
+                    sB.Draw(_jumpSet ? _buttonsOnOverlay : _buttonsOffOverlay, _currPos, _srcCells[5], _screenTint);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -307,6 +321,11 @@ namespace MonoDeck
             _currPos += _velocity;
         }
 
+        public void SetJump()
+        {
+            _jumpSet = true;
+        }
+
         public void GainLevel(CardColour levelingCardColour)
         {
             if (Level == levelColours.Count)
@@ -381,7 +400,7 @@ namespace MonoDeck
                             return true;
                         }
                     }
-                    else if (sequenceOrdered[1].Rank == CardRank.Royal && sequenceOrdered[2].Rank == CardRank.Royal)
+                    else if (sequenceOrdered[1].Rank == CardRank.Court && sequenceOrdered[2].Rank == CardRank.Court)
                     {
                         if (sequenceOrdered[1].Value == 3 && sequenceOrdered[2].Value == 4)
                         {
