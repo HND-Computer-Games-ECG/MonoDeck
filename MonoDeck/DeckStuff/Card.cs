@@ -65,7 +65,7 @@ namespace MonoDeck
 
         public string DebugInfo()
         {
-            return ($"**Card Info**:\nType: {Idx}\nType: {Type}\nColour: {Colour}\nRank: {Rank}\nValue:{Value}\n");
+            return ($"**Card {Idx} Info**:\tType: {Type}\tColour: {Colour}\tRank: {Rank}\tValue:{Value}\n");
         }
     }
 

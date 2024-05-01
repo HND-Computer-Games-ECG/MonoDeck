@@ -124,7 +124,7 @@ namespace MonoDeck
             };
 
             // Create a "hand" structure to hold player's cards
-            _playerHand = new Hand(new Vector2(_graphics.PreferredBackBufferWidth/2 - 35, _graphics.PreferredBackBufferHeight - 75), 15);
+            _playerHand = new Hand(new Vector2(_graphics.PreferredBackBufferWidth/2 - 35, _graphics.PreferredBackBufferHeight - 75), 13);
 
             // Cursor starts not "holding" a card
             _cursorCard = null;
@@ -303,6 +303,12 @@ namespace MonoDeck
             for (var i = 0; i < _allCardData.Count; i++)
                 _testDeck.AddCard(_allCardFaces[i], _allCardData[i]);
 
+            // Draw opening hand
+            _playerHand.AddCard(_testDeck.PullCard(1));
+            _playerHand.AddCard(_testDeck.PullCard(14));
+            _playerHand.AddCard(_testDeck.PullCard(27));
+            _playerHand.AddCard(_testDeck.PullCard(40));
+
             // Shuffle the deck
             _testDeck.Shuffle();
 
@@ -355,6 +361,7 @@ namespace MonoDeck
                     // Trying to re-hand a card...
                     if (_playerHand.SelectedCard != -1)
                     {
+                        Debug.WriteLine($"Rehanding card: {_cursorCard.DebugInfo()}");
                         _playerHand.AddCard(_cursorCard);
                         _cursorCard = null;
                     }
@@ -362,6 +369,7 @@ namespace MonoDeck
                     // Trying to discard a card
                     if (_testDeck.Hover(CardPile.Discard))
                     {
+                        Debug.WriteLine($"Discarding card: {_cursorCard.DebugInfo()}");
                         _testDeck.DiscardCard(_cursorCard);
                         _cursorCard = null;
                     }
@@ -374,6 +382,7 @@ namespace MonoDeck
                             foreach (var peep in _weePeeps)
                                 peep.LaunchCloudSwarm();
 
+                            Debug.WriteLine($"Playing card on peep {i}: {_cursorCard.DebugInfo()}");
                             ProcessCursorCard(i, dT);
 
                             if (_cursorCard.Data.Type != CardType.None)     // Cardtype.none is a joker, so it's destroyed instead of going into peep hands and discards
@@ -396,6 +405,7 @@ namespace MonoDeck
                     // Trying to draw a card, but check if the hand is full or the deck is empty first!
                     if (_testDeck.Hover(CardPile.Draw) && !_playerHand.IsFull && !_testDeck.IsEmpty)
                     {
+                        Debug.WriteLine($"Drawing card to hand.");
                         foreach (var peep in _weePeeps)
                             peep.LaunchCloudSwarm();
                         _playerHand.AddCard(_testDeck.PullCard());
@@ -407,7 +417,10 @@ namespace MonoDeck
 
                     // Trying to pick up a card...
                     if (_playerHand.SelectedCard != -1)
+                    {
+                        Debug.Write($"Taking card {_playerHand.SelectedCard} from hand -> ");
                         _cursorCard = _playerHand.PullCard();
+                    }
                 }
             }
 
@@ -422,6 +435,18 @@ namespace MonoDeck
                 
             #endregion
 
+            if (_playerHand.IsEmpty && _cursorCard == null)
+            {
+                for (int i = 0; i < 4; i++)
+                    _playerHand.AddCard(_testDeck.PullCard());
+
+                foreach (var peep in _weePeeps)
+                {
+                    peep.LaunchCloudSwarm();
+                    peep.LaunchCloudSwarm();
+                }
+            }
+
             // Store what the mouse WAS doing
             ms_old = ms_curr;
 
@@ -432,11 +457,26 @@ namespace MonoDeck
         {
             bool legalPlay = true;
 
-            if (_cursorCard.Data.Value == (int) CourtCards.Queen && _weePeeps[activePeep].HP >= _weePeeps[activePeep].HPMax)
-                legalPlay = false;
+            if (_cursorCard.Data.Rank == CardRank.Court)
+            {
+                if (_cursorCard.Data.Value == (int)CourtCards.Queen && _weePeeps[activePeep].HP >= _weePeeps[activePeep].HPMax)
+                {
+                    Debug.WriteLine("Cannot play a queen on a peep with full HP.");
+                    legalPlay = false;
+                }
 
-            if (_cursorCard.Data.Value == (int) CourtCards.King && _weePeeps[activePeep].CardAffinity != CardColour.None)
-                legalPlay = false;
+                if (_cursorCard.Data.Value == (int)CourtCards.King && _weePeeps[activePeep].CardAffinity != CardColour.None)
+                {
+                    Debug.WriteLine("Cannot play a king on a peep that's already at max upgrade.");
+                    legalPlay = false;
+                }
+
+                if (_cursorCard.Data.Type == CardType.None && _testDeck.IsDiscardEmpty)
+                {
+                    Debug.WriteLine("Cannot play a joker on an empty discard pile.");
+                    legalPlay = false;
+                }
+            }
 
             return legalPlay;
         }

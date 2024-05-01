@@ -466,16 +466,33 @@ namespace MonoDeck
             }
 
             if (IsInSequence() && IsSameSuit()) // Straight Flush
-                return 10;
-            if (IsSameValue())                  // 3 of a Kind
+            {
+                Debug.WriteLine("Scoring a straight flush.");
                 return 7;
-            if (IsSameSuit())                   // Flush
+            }
+            if (IsSameValue())                  // 3 of a Kind
+            {
+                Debug.WriteLine("Scoring 3 of a kind.");
                 return 5;
-            if (IsInSequence())                 // Straight
+            }
+            if (IsSameSuit())                   // Flush
+            {
+                Debug.WriteLine("Scoring a flush.");
                 return 3;
-            if (HasPair())                      // Pair
+            }
+            if (IsInSequence())                 // Straight
+            {
+                Debug.WriteLine("Scoring a straight.");
                 return 2;
-            return 1;                           // High Card
+            }
+            if (HasPair())                      // Pair
+            {
+                Debug.WriteLine("Scoring a pair.");
+                return 1;
+            }
+
+            Debug.WriteLine("Scoring a high card.");
+            return 0;                           // High Card
         }
 
         public void GainCloudSwarm(Texture2D tex, int amount = 1)
