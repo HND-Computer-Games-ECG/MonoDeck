@@ -17,6 +17,7 @@ namespace MonoDeck
         Diamond,
         Heart,
         Spade,
+        None
     }
 
     enum CardColour
@@ -29,17 +30,18 @@ namespace MonoDeck
     enum CardRank
     {
         Basic,
-        Royal
+        Court
     }
-    #endregion
 
-    enum Royals
+    enum CourtCards
     {
         Ace = 1,
         Jack,
         Queen,
-        King
+        King,
+        Joker
     }
+    #endregion
 
     /// <summary>
     /// The gameplay information about the card.
