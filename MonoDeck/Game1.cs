@@ -8,23 +8,23 @@ using System.Runtime.CompilerServices;
 
 namespace MonoDeck
 {
-    // Add jokers to seek cards
+    // Add jokers to take top discard       -   done
 
     // Hand limit based on combined value of cards?
 
-    // A Jump next launch
+    // A Jump next launch                   - done
     // J Armours in suit - armour protects against lethal damage
-    // Q Heal All
-    // K Upgrade
+    // Q Heal All                           - done
+    // K Upgrade                            - done
 
     // Unplayed cards get worse
 
-    // Spades add to that cloud and launch orbitals
-    // Diamonds add to all orbitals
-    // Clubs add to all clouds
-    // Hearts Heal
+    // Spades add to that cloud and launch orbitals     - done
+    // Diamonds add to all orbitals         - done
+    // Clubs add to all clouds              - done
+    // Hearts Heal                          - done
 
-    // Clouds drop one per card play
+    // Clouds drop one per card play        - done
 
     public class Game1 : Game
     {
