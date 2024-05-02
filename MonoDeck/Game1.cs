@@ -290,8 +290,8 @@ namespace MonoDeck
             {
                 Content.Load<Texture2D>("Cards/ParticleCards/blank"),
                 Content.Load<Texture2D>("Cards/ParticleCards/Heart"),
-                Content.Load<Texture2D>("shield_chroma"),
-                Content.Load<Texture2D>("shield_overlay")
+                Content.Load<Texture2D>("Cards/ParticleCards/JackBlack"),
+                Content.Load<Texture2D>("Cards/ParticleCards/JackRed")
             };
 
             // The card faces need to match up with the card data set up in Initialise or this won't work - so let's check for that
@@ -491,11 +491,11 @@ namespace MonoDeck
                         _weePeeps[activePeep].SetJump();
                         break;
                     case (int)CourtCards.Jack:
-                        _weePeeps[activePeep].GainArmour();
+                        _weePeeps[activePeep].GainArmour(_cursorCard.Data);
                         foreach (var peep in _weePeeps)
                         {
                             if (peep.CardAffinity == _cursorCard.Data.Colour)
-                                peep.GainArmour();
+                                peep.GainArmour(_cursorCard.Data);
                         }
                         break;
                     case (int)CourtCards.Queen:

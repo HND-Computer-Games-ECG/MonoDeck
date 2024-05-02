@@ -33,7 +33,7 @@ namespace MonoDeck
 
         private Texture2D _baseTxr, _faceOverlay, _dpadOverlay, _buttonsOffOverlay, _buttonsOnOverlay;
         private Texture2D _emptyHeartTxr, _fullHeartTxr;
-        private Texture2D _armourChromaTxr, _armourOverlayTxr;
+        private Texture2D _armourBlack, _armourRed;
 
         private List<Rectangle> _StatQuarters;
         private float _statsFadeSecs;
@@ -67,7 +67,7 @@ namespace MonoDeck
             set => _hp = MathHelper.Clamp(value, 0, HPMax);
         }
 
-        private int _armour;
+        private List<CardColour> _armour;
 
         private List<CardData> _hand;
 
@@ -98,8 +98,8 @@ namespace MonoDeck
             _buttonsOnOverlay = butOnTxr;
             _emptyHeartTxr = uiTxrs[0];
             _fullHeartTxr = uiTxrs[1];
-            _armourChromaTxr = uiTxrs[2];
-            _armourOverlayTxr = uiTxrs[3];
+            _armourBlack = uiTxrs[2];
+            _armourRed = uiTxrs[3];
 
             _StatQuarters = new List<Rectangle>()
             {
@@ -147,7 +147,7 @@ namespace MonoDeck
 
             HPMax = GameSettings.PeepHPMax;
             _hp = GameSettings.PeepStartingHP;
-            _armour = 0;
+            _armour = new List<CardColour>();
 
             _hand = new List<CardData>();
         }
@@ -165,6 +165,12 @@ namespace MonoDeck
 
             if (damageAccumulated > 0)
             {
+                if (_armour.Count > 0 && damageAccumulated > HP) 
+                {
+                    _armour.RemoveAt(_armour.Count-1);
+                    damageAccumulated = 0;
+                    Debug.WriteLine("Lethal damage blocked by Jack's armour!");
+                }
                 HP -= damageAccumulated;
                 SetMood(CharState.Sad, MathHelper.Clamp(damageAccumulated/8f, 0.25f, 2));
             }
@@ -296,12 +302,14 @@ namespace MonoDeck
                     Color.White * _statsAlpha);
 
             // Armour Drawing
-            for (i = 0; i < _armour; i++)
+            for (i = 0; i < _armour.Count; i++)
             {
-                sB.Draw(_armourChromaTxr, new Vector2(_currPos.X + i * _armourChromaTxr.Width, healthY - 15),
-                    _bodyTint * _statsAlpha);
-                sB.Draw(_armourOverlayTxr, new Vector2(_currPos.X + i * _armourOverlayTxr.Width, healthY - 15),
-                    Color.White * _statsAlpha);
+                if (_armour[i] == CardColour.Black)
+                    sB.Draw(_armourBlack, new Vector2(_currPos.X + i * _armourBlack.Width, healthY - 15),
+                        Color.White * _statsAlpha);
+                else
+                    sB.Draw(_armourRed, new Vector2(_currPos.X + i * _armourRed.Width, healthY - 15),
+                        Color.White * _statsAlpha);
             }
 
             // Hand Drawing
@@ -329,14 +337,13 @@ namespace MonoDeck
 
         public bool TryJump(float deltaTime)
         {
-            if (_jumpSet)
-            {
-                _velocity.Y = -800 * deltaTime;
-                _currPos += _velocity;
-                _jumpSet = false;
-                return true;
-            }
-            return false;
+            if (!_jumpSet) 
+                return false;
+
+            _velocity.Y = -800 * deltaTime;
+            _currPos += _velocity;
+            _jumpSet = false;
+            return true;
         }
 
         public void SetJump()
@@ -372,9 +379,9 @@ namespace MonoDeck
             }
         }
 
-        public void GainArmour()
+        public void GainArmour(CardData cardData)
         {
-            _armour++;
+            _armour.Add(cardData.Colour);
         }
 
         public void GainHealth(int amount = 1)
