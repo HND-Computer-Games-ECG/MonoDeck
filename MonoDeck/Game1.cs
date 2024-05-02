@@ -420,6 +420,7 @@ namespace MonoDeck
                     }
                 }
             }
+            #endregion
 
             // Cycle the discards
             if (_testDeck.Hover(CardPile.Discard))
@@ -441,8 +442,7 @@ namespace MonoDeck
             }
 
 
-            #endregion
-
+            // Refill hand if it's been emptied
             if (_playerHand.IsEmpty && _cursorCard == null)
             {
                 for (var i = 0; i < GameSettings.HandRefillSize; i++)
