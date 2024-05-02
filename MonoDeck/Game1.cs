@@ -4,9 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Windows.Forms;
-using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 
 namespace MonoDeck
 {
@@ -432,7 +429,18 @@ namespace MonoDeck
                 else if (ms_curr.ScrollWheelValue > ms_old.ScrollWheelValue)
                     _testDeck.SinkDiscard();
             }
-                
+
+            // UI responding to card hold
+            if (_cursorCard != null)
+            {
+                if (_cursorCard.Data.Type == CardType.Heart || _cursorCard.Data is { Rank: CardRank.Court, Value: (int)CourtCards.Queen })
+                {
+                    foreach (var peep in _weePeeps)
+                        peep.ShowStats();
+                }
+            }
+
+
             #endregion
 
             if (_playerHand.IsEmpty && _cursorCard == null)

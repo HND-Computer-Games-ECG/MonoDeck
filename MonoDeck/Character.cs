@@ -335,6 +335,11 @@ namespace MonoDeck
             _moodTimer = duration;
         }
 
+        public void ShowStats()
+        {
+            _statsAlpha = 1;
+        }
+
         public bool TryJump(float deltaTime)
         {
             if (!_jumpSet) 
