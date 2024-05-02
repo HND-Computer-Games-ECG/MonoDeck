@@ -130,7 +130,7 @@ namespace MonoDeck
             }
 
             _screenTint = Color.LightGray;
-            _statsFadeSecs = 5;
+            _statsFadeSecs = GameSettings.UIFadeDuration;
             _statsAlpha = 1;
 
             _cState = CharState.Idle;
@@ -145,8 +145,8 @@ namespace MonoDeck
 
             _walkPace = 0.25f;
 
-            HPMax = 16;
-            _hp = 12;
+            HPMax = GameSettings.PeepHPMax;
+            _hp = GameSettings.PeepStartingHP;
             _armour = 0;
 
             _hand = new List<CardData>();
@@ -398,11 +398,39 @@ namespace MonoDeck
 
         private int ScoreHand()
         {
+            if (IsInSequence() && IsSameSuit()) // Straight Flush
+            {
+                Debug.WriteLine("Scoring a straight flush.");
+                return GameSettings.HandRewards[5];
+            }
+            if (IsSameValue())                  // 3 of a Kind
+            {
+                Debug.WriteLine("Scoring 3 of a kind.");
+                return GameSettings.HandRewards[4];
+            }
+            if (IsSameSuit())                   // Flush
+            {
+                Debug.WriteLine("Scoring a flush.");
+                return GameSettings.HandRewards[3];
+            }
+            if (IsInSequence())                 // Straight
+            {
+                Debug.WriteLine("Scoring a straight.");
+                return GameSettings.HandRewards[2];
+            }
+            if (HasPair())                      // Pair
+            {
+                Debug.WriteLine("Scoring a pair.");
+                return GameSettings.HandRewards[1];
+            }
+
+            Debug.WriteLine("Scoring a high card.");
+            return GameSettings.HandRewards[0];                           // High Card
+
             int RankedValue(CardData cardData)
             {
                 return cardData.Rank == CardRank.Basic ? cardData.Value : cardData.Value + 9;
             }
-
             bool IsInSequence()
             {
                 var sequenceOrdered = _hand.OrderBy(o => o.Value).ToList();
@@ -471,35 +499,6 @@ namespace MonoDeck
                 return RankedValue(sequenceOrdered[0]) == RankedValue(sequenceOrdered[1]) 
                        || RankedValue(sequenceOrdered[1]) == RankedValue(sequenceOrdered[2]);
             }
-
-            if (IsInSequence() && IsSameSuit()) // Straight Flush
-            {
-                Debug.WriteLine("Scoring a straight flush.");
-                return 7;
-            }
-            if (IsSameValue())                  // 3 of a Kind
-            {
-                Debug.WriteLine("Scoring 3 of a kind.");
-                return 5;
-            }
-            if (IsSameSuit())                   // Flush
-            {
-                Debug.WriteLine("Scoring a flush.");
-                return 3;
-            }
-            if (IsInSequence())                 // Straight
-            {
-                Debug.WriteLine("Scoring a straight.");
-                return 2;
-            }
-            if (HasPair())                      // Pair
-            {
-                Debug.WriteLine("Scoring a pair.");
-                return 1;
-            }
-
-            Debug.WriteLine("Scoring a high card.");
-            return 0;                           // High Card
         }
 
         public void GainCloudSwarm(Texture2D tex, int amount = 1)

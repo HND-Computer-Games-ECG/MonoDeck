@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Windows.Forms;
+using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 
 namespace MonoDeck
 {
@@ -124,7 +126,7 @@ namespace MonoDeck
             };
 
             // Create a "hand" structure to hold player's cards
-            _playerHand = new Hand(new Vector2(_graphics.PreferredBackBufferWidth/2 - 35, _graphics.PreferredBackBufferHeight - 75), 5);
+            _playerHand = new Hand(new Vector2(_graphics.PreferredBackBufferWidth/2 - 35, _graphics.PreferredBackBufferHeight - 75), GameSettings.StartingHandSize);
 
             // Cursor starts not "holding" a card
             _cursorCard = null;
@@ -338,10 +340,8 @@ namespace MonoDeck
 
         protected override void Update(GameTime gameTime)
         {
-            // Make a local variable so we don't have to type gametime.Elapsed...blahblahblah each time
             var dT = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            // Get what the mouse is doing
             ms_curr = Mouse.GetState();
             
             // Update the deck and hand
@@ -437,7 +437,7 @@ namespace MonoDeck
 
             if (_playerHand.IsEmpty && _cursorCard == null)
             {
-                for (int i = 0; i < 4; i++)
+                for (var i = 0; i < GameSettings.HandRefillSize; i++)
                     _playerHand.AddCard(_testDeck.PullCard());
 
                 foreach (var peep in _weePeeps)
