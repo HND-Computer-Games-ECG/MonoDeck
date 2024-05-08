@@ -41,6 +41,12 @@ namespace MonoDeck
         {
             _drawpileHighlight = _drawpileRect.Contains(mousePos);
             _discardHighlight = _discardRect.Contains(mousePos);
+
+            foreach (var card in _drawPile)
+                card.Update(deltaTime, FacingState.FaceDown);
+
+            foreach (var card in _discardPile)
+                card.Update(deltaTime, FacingState.FaceUp);
         }
 
         public void Draw(SpriteBatch sb)

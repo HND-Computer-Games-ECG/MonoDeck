@@ -33,6 +33,9 @@ namespace MonoDeck
 
         public void Update(float deltaTime, Point mousePos)
         {
+            foreach (var card in _cards)
+                card.Update(deltaTime, FacingState.FaceUp);
+
             if (_cards.Count > 0)
             {
                 // The last card in the hand is an annoying edge case, so let's deal with it first...

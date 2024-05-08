@@ -64,6 +64,7 @@ namespace MonoDeck
         Texture2D _backTex;
 
         Texture2D _particle;
+        SteamerEmitter _particleEmitter;
 
         private Vector2 _pos;
         public Vector2 Pos 
@@ -90,6 +91,16 @@ namespace MonoDeck
             _frontTex = frontTex;
             _backTex = backTex;
             Data = data;
+
+            _particle = particle;
+            _particleEmitter = new SteamerEmitter(particle, _rect.Center.ToVector2(), data.Value, 
+                new Vector2(frontTex.Width/2, frontTex.Height/4));
+        }
+
+        public void Update(float deltaTime, FacingState facing)
+        {
+            if (facing == FacingState.FaceUp)
+                _particleEmitter.Update(deltaTime, _rect.Center.ToVector2());
         }
 
         public void Draw(SpriteBatch sb, FacingState facingState, bool highlight)
@@ -100,10 +111,17 @@ namespace MonoDeck
         public void Draw(SpriteBatch sb, Vector2 position, FacingState facingState, bool highlight)
         {
             sb.Draw(facingState == FacingState.FaceUp ? _frontTex : _backTex, position, highlight ? Color.White : Color.LightGray);
+
+            if (facingState == FacingState.FaceUp)
+            {
+                _particleEmitter.Start();
+                _particleEmitter.Draw(sb);
+            }
         }
 
         public void DrawMini(SpriteBatch sb, Point position, FacingState facingState, bool highlight)
         {
+            Pos = position.ToVector2();
             Rectangle rect = _rect;
             rect.Size = _rect.Size / new Point(2);
             rect.Location = position;
@@ -111,12 +129,14 @@ namespace MonoDeck
             sb.Draw(facingState == FacingState.FaceUp? _frontTex : _backTex, 
                 rect, 
                 null,
-                highlight ? Color.White : Color.LightGray,
-                0,
-                rect.Size.ToVector2() / 2,
-                SpriteEffects.None,
-                0
+                highlight ? Color.White : Color.LightGray
             );
+
+            if (facingState == FacingState.FaceUp)
+            {
+                _particleEmitter.Stop();
+                _particleEmitter.Draw(sb);
+            }
         }
 
         public string DebugInfo()

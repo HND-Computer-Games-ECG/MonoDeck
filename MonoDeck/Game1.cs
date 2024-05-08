@@ -14,6 +14,7 @@ namespace MonoDeck
 
         public static readonly Random RNG = new Random();
 
+
         private MouseState ms_curr, ms_old;
 
         // Variables for data management
@@ -21,8 +22,6 @@ namespace MonoDeck
         List<Texture2D> _allCardFaces;
         List<CardData> _allCardData;
         List<Texture2D> _allCardParticles;
-
-        Particle testParticle;
 
 
         // Actual game world stuff
@@ -34,6 +33,7 @@ namespace MonoDeck
 
 #if DEBUG
         private SpriteFont _debugFont;
+        public static Texture2D _debugPixel;
 #endif
 
         public Game1()
@@ -71,7 +71,7 @@ namespace MonoDeck
             };
 
             // Create a "hand" structure to hold player's cards
-            _playerHand = new Hand(new Vector2(_graphics.PreferredBackBufferWidth/2 - 70, _graphics.PreferredBackBufferHeight - 75), 24);
+            _playerHand = new Hand(new Vector2(_graphics.PreferredBackBufferWidth/2 - 70, _graphics.PreferredBackBufferHeight - 275), 24);
 
             // Cursor starts not "holding" a card
             _cursorCard = null;
@@ -88,6 +88,9 @@ namespace MonoDeck
 
 #if DEBUG
             _debugFont = Content.Load<SpriteFont>("Arial08");
+
+            _debugPixel = new Texture2D(_graphics.GraphicsDevice, 1, 1);
+            _debugPixel.SetData(new[]{Color.White});
 #endif
 
             // Preload all the art into lists (this would be better in a spritesheet, but this is easier...)
@@ -158,9 +161,6 @@ namespace MonoDeck
             _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(330, 100), new Point(3, 2), CardColour.Black));
             _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(200, 250), new Point(3, 2), CardColour.None));
 
-            testParticle = new Particle(
-                _allCardParticles[0], new Vector2(300, 480), new Vector2(0, -50), 0.5f, Color.White, 3, Vector2.One
-                );
         }
 
         protected override void Update(GameTime gameTime)
@@ -174,6 +174,7 @@ namespace MonoDeck
             // Update the deck and hand
             _testDeck.Update(dT, ms_curr.Position);
             _playerHand.Update(dT, ms_curr.Position);
+            _cursorCard?.Update(dT, FacingState.FaceUp);
 
             // Update the peeps
             foreach (var peep in _weePeeps)
@@ -238,8 +239,6 @@ namespace MonoDeck
             }
             #endregion
 
-            testParticle.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
-
             // Store what the mouse WAS doing
             ms_old = ms_curr;
 
@@ -259,8 +258,7 @@ namespace MonoDeck
 
             _playerHand.Draw(_spriteBatch);
 
-            if (_cursorCard != null)
-                _cursorCard.DrawMini(_spriteBatch, ms_curr.Position, FacingState.FaceUp, true);
+            _cursorCard?.DrawMini(_spriteBatch, ms_curr.Position, FacingState.FaceUp, true);
 
 #if DEBUG
             _spriteBatch.DrawString(_debugFont, _cursorCard == null ? "_cursorCard is null" : _cursorCard.DebugInfo(), ms_curr.Position.ToVector2() + Vector2.One, Color.Black);
@@ -278,8 +276,6 @@ namespace MonoDeck
                 _spriteBatch.DrawString(_debugFont, peep.DebugInfo(), peep.Pos, Color.White);
             }
 #endif
-
-            testParticle.Draw(_spriteBatch);
 
             _spriteBatch.End();
 
