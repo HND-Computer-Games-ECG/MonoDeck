@@ -237,6 +237,15 @@ namespace MonoDeck
                         _cursorCard = _playerHand.PullCard();
                 }
             }
+
+            if (_playerHand.SelectedCard != -1)
+            {
+                if (ms_curr.ScrollWheelValue < ms_old.ScrollWheelValue)
+                    _playerHand.Pos -= new Vector2(20, 0);
+                else if (ms_curr.ScrollWheelValue > ms_old.ScrollWheelValue)
+                    _playerHand.Pos -= new Vector2(-20, 0);
+            }
+
             #endregion
 
             // Store what the mouse WAS doing

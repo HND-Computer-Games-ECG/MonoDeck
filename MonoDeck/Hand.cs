@@ -8,7 +8,7 @@ namespace MonoDeck
     class Hand
     {
         private List<Card> _cards;
-        public Vector2 Pos { get; private set; }
+        public Vector2 Pos { get; set; }
 
         private int _maxSize;
 
@@ -54,6 +54,8 @@ namespace MonoDeck
             }
             else
                 SelectedCard = -1;
+
+            RefreshPositions();
         }
 
         public void Draw(SpriteBatch sb)
