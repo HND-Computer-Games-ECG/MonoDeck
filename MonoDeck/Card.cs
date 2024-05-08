@@ -63,6 +63,8 @@ namespace MonoDeck
         Texture2D _frontTex;
         Texture2D _backTex;
 
+        Texture2D _particle;
+
         private Vector2 _pos;
         public Vector2 Pos 
         {
@@ -79,7 +81,7 @@ namespace MonoDeck
 
         public CardData Data { get; private set; }
 
-        public Card(Vector2 pos, Texture2D frontTex, Texture2D backTex, CardData data)
+        public Card(Vector2 pos, Texture2D frontTex, Texture2D backTex, CardData data, Texture2D particle)
         {
             Pos = pos;
             _rect = new Rectangle(pos.ToPoint(), frontTex.Bounds.Size);

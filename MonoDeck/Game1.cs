@@ -20,6 +20,10 @@ namespace MonoDeck
         List<Texture2D> _allCardBacks;
         List<Texture2D> _allCardFaces;
         List<CardData> _allCardData;
+        List<Texture2D> _allCardParticles;
+
+        Particle testParticle;
+
 
         // Actual game world stuff
         private Deck _testDeck;
@@ -67,7 +71,7 @@ namespace MonoDeck
             };
 
             // Create a "hand" structure to hold player's cards
-            _playerHand = new Hand(new Vector2(_graphics.PreferredBackBufferWidth/2 - 70, _graphics.PreferredBackBufferHeight - 75), 7);
+            _playerHand = new Hand(new Vector2(_graphics.PreferredBackBufferWidth/2 - 70, _graphics.PreferredBackBufferHeight - 75), 24);
 
             // Cursor starts not "holding" a card
             _cursorCard = null;
@@ -128,6 +132,13 @@ namespace MonoDeck
                 Content.Load<Texture2D>("Cards/Faces/cardSpadesQ"),
                 Content.Load<Texture2D>("Cards/Faces/cardSpadesK"),
             };
+            _allCardParticles = new List<Texture2D>
+            {
+                Content.Load<Texture2D>("Cards/Particles/club"),
+                Content.Load<Texture2D>("Cards/Particles/diamond"),
+                Content.Load<Texture2D>("Cards/Particles/heart"),
+                Content.Load<Texture2D>("Cards/Particles/spade"),
+            };
 
             // The card faces need to match up with the card data set up in Initialise or this won't work - so let's check for that
             Debug.Assert(_allCardFaces.Count == _allCardData.Count, "Card face count does not match card data count");
@@ -137,7 +148,7 @@ namespace MonoDeck
 
             // Add one of each card to the deck
             for (var i = 0; i < _allCardData.Count; i++)
-                _testDeck.AddCard(_allCardFaces[i], _allCardData[i]);
+                _testDeck.AddCard(_allCardFaces[i], _allCardData[i], _allCardParticles[(int) _allCardData[i].Type]);
 
             // Shuffle the deck
             _testDeck.Shuffle();
@@ -146,6 +157,10 @@ namespace MonoDeck
             _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(50, 160), new Point(3, 2), CardColour.Red));
             _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(330, 100), new Point(3, 2), CardColour.Black));
             _weePeeps.Add(new Character(Content.Load<Texture2D>("charsheet_chroma"), Content.Load<Texture2D>("charsheet_overlay"), new Vector2(200, 250), new Point(3, 2), CardColour.None));
+
+            testParticle = new Particle(
+                _allCardParticles[0], new Vector2(300, 480), new Vector2(0, -50), 0.5f, Color.White, 3, Vector2.One
+                );
         }
 
         protected override void Update(GameTime gameTime)
@@ -223,6 +238,8 @@ namespace MonoDeck
             }
             #endregion
 
+            testParticle.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
+
             // Store what the mouse WAS doing
             ms_old = ms_curr;
 
@@ -261,6 +278,8 @@ namespace MonoDeck
                 _spriteBatch.DrawString(_debugFont, peep.DebugInfo(), peep.Pos, Color.White);
             }
 #endif
+
+            testParticle.Draw(_spriteBatch);
 
             _spriteBatch.End();
 

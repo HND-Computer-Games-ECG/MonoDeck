@@ -82,9 +82,9 @@ namespace MonoDeck
         /// </summary>
         /// <param name="frontTex">Art for the front of the card</param>
         /// <param name="data">The play data of the card</param>
-        public void AddCard(Texture2D frontTex, CardData data)
+        public void AddCard(Texture2D frontTex, CardData data, Texture2D particle)
         {
-            AddCard(frontTex, _backTex, data);
+            AddCard(frontTex, _backTex, data, particle);
         }
 
         /// <summary>
@@ -93,9 +93,9 @@ namespace MonoDeck
         /// <param name="frontTex">Art for the front of the card</param>
         /// <param name="backTex">Art for the back of the card</param>
         /// <param name="data">The play data of the card</param>
-        public void AddCard(Texture2D frontTex, Texture2D backTex, CardData data)
+        public void AddCard(Texture2D frontTex, Texture2D backTex, CardData data, Texture2D particle)
         {
-            _drawPile.Add(new Card(Pos, frontTex, backTex, data));
+            _drawPile.Add(new Card(Pos, frontTex, backTex, data, particle));
         }
 
         /// <summary>
