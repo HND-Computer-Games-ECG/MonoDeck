@@ -44,7 +44,7 @@ namespace MonoDeck
 
         public void Update(float dt)
         {
-            _pos += _velocity * dt + new Vector2(MathF.Sin(_rotation) * _wibbliness, 0);
+            _pos += (_velocity * dt) + new Vector2(MathF.Sin(_rotation) * _wibbliness, 0);
             _rotation += _rotationSpeed * dt;
 
             _scale *= 1.002f;
@@ -132,7 +132,7 @@ namespace MonoDeck
                 _txr, 
                 Pos + (new Vector2(Game1.RNG.NextSingle() - 0.5f, Game1.RNG.NextSingle() - 0.5f) * _spawnZoneSize), 
                 3 + Game1.RNG.NextSingle(),
-                new Vector2(0, -50), 
+                new Vector2(0, -30-Game1.RNG.Next(20)), 
                 0.5f, 
                 Color.White, 
                 3, 
